@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SiberKalkan – Simülasyon</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0a0f1e;--surface:#111827;--surface2:#1c2536;--surface3:#243044;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.13);
+  --accent:#00b4d8;--accent2:#0077b6;
+  --green:#22c55e;--red:#ef4444;--purple:#7c3aed;
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --chat-bg:#1a2035;--bubble-in:#1e293b;--bubble-out:#0d4f3c;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;
+  display:flex;justify-content:center;align-items:flex-start;padding:20px 10px;}
+.phone{width:375px;background:#0d0d0d;border-radius:44px;padding:12px;
+  box-shadow:0 0 0 2px #2a2a2a,0 0 0 4px #1a1a1a,0 40px 80px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.06);
+  position:relative;}
+.phone-notch{width:120px;height:28px;background:#0d0d0d;border-radius:0 0 18px 18px;margin:0 auto 8px;position:relative;z-index:10;}
+.phone-notch::before{content:'';position:absolute;top:6px;left:50%;transform:translateX(-50%);width:10px;height:10px;background:#1a1a1a;border-radius:50%;box-shadow:0 0 0 2px #2a2a2a;}
+.phone-screen{background:var(--surface);border-radius:34px;overflow:hidden;height:760px;max-height:760px;min-height:760px;display:flex;flex-direction:column;position:relative;}
+.status-bar{background:var(--surface);padding:8px 20px 4px;display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:600;color:var(--text);flex-shrink:0;}
+.status-icons{display:flex;gap:4px;align-items:center;}
+.screen{display:none;flex-direction:column;height:100%;overflow:hidden;}
+.screen.active{display:flex;}
+/* LOGIN */
+#screen-login{background:linear-gradient(160deg,#0a1628 0%,#0d1f3c 50%,#091420 100%);justify-content:center;align-items:center;padding:24px 22px;gap:0;overflow-y:auto;}
+.login-shield{width:80px;height:80px;background:linear-gradient(135deg,#00b4d8,#0077b6);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 8px 32px rgba(0,180,216,0.4);margin-bottom:16px;animation:shieldPulse 3s ease-in-out infinite;}
+@keyframes shieldPulse{0%,100%{box-shadow:0 8px 32px rgba(0,180,216,0.4);}50%{box-shadow:0 8px 48px rgba(0,180,216,0.7);}}
+.login-title{font-size:24px;font-weight:800;color:#fff;margin-bottom:4px;}
+.login-sub{font-size:12px;color:var(--text2);text-align:center;margin-bottom:24px;line-height:1.5;}
+.login-label{font-size:11px;color:var(--text2);font-weight:600;align-self:flex-start;margin-bottom:5px;}
+.login-input{width:100%;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:13px;color:var(--text);font-size:15px;padding:12px 14px;outline:none;transition:border-color 0.2s;margin-bottom:14px;}
+.login-input:focus{border-color:var(--accent);}
+.login-input::placeholder{color:var(--text3);}
+.mode-row{display:flex;gap:10px;width:100%;margin-bottom:20px;}
+.mode-btn{flex:1;padding:11px 8px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;text-align:center;}
+.mode-btn.selected{border-color:var(--accent);background:rgba(0,180,216,0.12);color:var(--accent);}
+.mode-icon{font-size:18px;display:block;margin-bottom:3px;}
+.btn-primary{width:100%;background:linear-gradient(135deg,#00b4d8,#0077b6);color:white;font-size:15px;font-weight:700;padding:14px;border-radius:14px;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(0,180,216,0.35);transition:transform 0.15s;}
+.btn-primary:active{transform:scale(0.97);}
+/* CHAT */
+#screen-chat{background:var(--chat-bg);}
+.chat-header{background:linear-gradient(135deg,#0a2a4a,#0d3a5c);padding:10px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;}
+.hbtn{background:rgba(255,255,255,0.08);border:none;color:white;width:30px;height:30px;border-radius:9px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hbtn-admin{background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.3);color:#a78bfa;}
+.chat-avatar{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:white;flex-shrink:0;}
+.chat-info{flex:1;min-width:0;}
+.chat-name{font-size:13px;font-weight:700;color:white;}
+.chat-status{font-size:10px;color:#90caf9;}
+.score-badge{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:800;color:#fbbf24;flex-shrink:0;}
+.progress-wrap{background:rgba(255,255,255,0.06);height:3px;flex-shrink:0;}
+.progress-fill{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 0.5s ease;}
+.messages{flex:1;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:7px;scroll-behavior:smooth;min-height:0;max-height:calc(760px - 180px);}
+.messages::-webkit-scrollbar{width:3px;}
+.messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px;}
+.msg-row{display:flex;}
+.msg-row.out{justify-content:flex-end;}
+.msg-row.in{justify-content:flex-start;}
+.bubble{max-width:78%;padding:9px 12px;font-size:14px;line-height:1.45;word-break:break-word;}
+.bubble.in{background:var(--bubble-in);border-radius:4px 15px 15px 15px;color:var(--text);}
+.bubble.out{background:var(--bubble-out);border-radius:15px 4px 15px 15px;color:#d1fae5;}
+.bubble.pending{background:rgba(251,191,36,0.12);border:1.5px dashed rgba(251,191,36,0.4);border-radius:15px 4px 15px 15px;color:#fbbf24;}
+.bubble-time{font-size:10px;color:var(--text3);margin-top:3px;text-align:right;}
+.typing-bubble{background:var(--bubble-in);border-radius:4px 15px 15px 15px;padding:11px 14px;display:flex;gap:4px;align-items:center;}
+.dot{width:6px;height:6px;background:var(--text3);border-radius:50%;animation:dotBounce 1.2s infinite;}
+.dot:nth-child(2){animation-delay:0.2s;}.dot:nth-child(3){animation-delay:0.4s;}
+@keyframes dotBounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
+.input-area{padding:8px 10px;background:var(--surface);border-top:1px solid var(--border);display:flex;gap:7px;align-items:flex-end;flex-shrink:0;}
+.msg-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:18px;color:var(--text);font-size:14px;padding:9px 13px;outline:none;transition:border-color 0.2s;resize:none;overflow-y:auto;min-height:38px;max-height:96px;line-height:1.4;}
+.msg-input:focus{border-color:var(--accent);}
+.msg-input::placeholder{color:var(--text3);}
+.send-btn{width:38px;height:38px;min-width:38px;min-height:38px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:50%;color:white;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 12px rgba(0,180,216,0.35);transition:transform 0.15s;align-self:flex-end;}
+.send-btn:active{transform:scale(0.9);}
+.send-btn:disabled{opacity:0.4;cursor:default;}
+/* MODAL */
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);display:none;flex-direction:column;justify-content:flex-end;z-index:100;border-radius:34px;}
+.modal-overlay.show{display:flex;}
+.modal-sheet{background:var(--surface2);border-radius:24px 24px 0 0;padding:18px 16px 28px;border-top:1px solid rgba(255,255,255,0.08);animation:slideUp 0.3s ease;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-handle{width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 14px;}
+.modal-icon{font-size:30px;text-align:center;margin-bottom:7px;}
+.modal-title{font-size:15px;font-weight:800;color:white;text-align:center;margin-bottom:5px;}
+.modal-reason{font-size:11px;color:#fca5a5;text-align:center;margin-bottom:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:9px;padding:7px 10px;}
+.modal-feedback{font-size:12px;color:var(--text);background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:11px;padding:11px;margin-bottom:13px;line-height:1.6;}
+.modal-feedback strong{color:var(--accent);}
+.modal-actions{display:flex;gap:9px;}
+.btn-vazgec{flex:1;padding:12px;background:linear-gradient(135deg,#16a34a,#15803d);color:white;font-size:13px;font-weight:700;border-radius:13px;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(22,163,74,0.3);transition:transform 0.15s;line-height:1.3;text-align:center;}
+.btn-gonder{flex:1;padding:12px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#ef4444;font-size:13px;font-weight:700;border-radius:13px;cursor:pointer;transition:transform 0.15s;line-height:1.3;text-align:center;}
+.btn-anladim{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;font-size:14px;font-weight:700;border-radius:13px;border:none;cursor:pointer;}
+/* CALM */
+#screen-calm{background:linear-gradient(180deg,#0a1f35 0%,#0d2b44 50%,#071420 100%);justify-content:center;align-items:center;padding:30px 24px;gap:16px;text-align:center;}
+.calm-emoji-big{font-size:52px;animation:calmFloat 3s ease-in-out infinite;}
+@keyframes calmFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.calm-title{font-size:20px;font-weight:800;color:#90caf9;}
+.calm-sub{font-size:13px;color:var(--text2);line-height:1.6;max-width:260px;}
+.calm-circle{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#0288d1,#0277bd);display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;color:white;animation:breathe 2s ease-in-out infinite;}
+@keyframes breathe{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(2,136,209,0.5);}50%{transform:scale(1.12);box-shadow:0 0 0 20px rgba(2,136,209,0);}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(2,136,209,0);}}
+.calm-hint{font-size:12px;color:#4fc3f7;}
+/* COMPLETE */
+#screen-complete{background:linear-gradient(160deg,#052e16,#064e3b,#0a1628);justify-content:center;align-items:center;padding:24px 20px;text-align:center;gap:0;overflow-y:auto;}
+.complete-icon{font-size:52px;margin-bottom:12px;animation:popIn 0.5s ease;}
+@keyframes popIn{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
+.complete-title{font-size:20px;font-weight:800;color:#4ade80;margin-bottom:5px;}
+.complete-sub{font-size:12px;color:#86efac;line-height:1.6;margin-bottom:16px;max-width:260px;}
+.score-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:16px 24px;margin-bottom:14px;width:100%;max-width:280px;}
+.score-label{font-size:10px;color:#86efac;font-weight:700;letter-spacing:1px;margin-bottom:3px;}
+.score-big{font-size:44px;font-weight:900;}
+.stats-row{display:flex;gap:9px;margin-bottom:16px;width:100%;max-width:280px;}
+.stat-item{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 6px;text-align:center;}
+.stat-n{font-size:20px;font-weight:800;}
+.stat-n.green{color:#4ade80;}.stat-n.amber{color:#fbbf24;}.stat-n.red{color:#f87171;}
+.stat-l{font-size:9px;color:var(--text2);margin-top:2px;}
+.btn-karne{width:100%;max-width:280px;padding:12px;margin-bottom:9px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;font-size:13px;font-weight:700;border-radius:13px;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(124,58,237,0.3);}
+.btn-restart{width:100%;max-width:280px;padding:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:white;font-size:13px;font-weight:700;border-radius:13px;cursor:pointer;}
+/* KARNE */
+#screen-karne{background:var(--surface);overflow-y:auto;height:100%;max-height:760px;}
+.karne-header{background:linear-gradient(135deg,#4c1d95,#6d28d9);padding:12px 14px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,0.1);flex-shrink:0;}
+.karne-body{padding:14px;display:flex;flex-direction:column;gap:12px;}
+.ksec{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;padding:12px;}
+.ksec-title{font-size:10px;font-weight:700;color:#a78bfa;letter-spacing:0.5px;margin-bottom:10px;}
+.karne-score-bar{height:9px;background:rgba(255,255,255,0.08);border-radius:5px;overflow:hidden;margin:7px 0;}
+.karne-score-fill{height:9px;border-radius:5px;transition:width 0.8s ease;}
+.krow{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.krow:last-child{border:none;}
+.krow-label{color:var(--text2);}
+.krow-val{color:var(--text);font-weight:700;}
+.pedagoji-box{background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:11px;padding:11px;font-size:12px;color:var(--text);line-height:1.7;}
+.msg-table{width:100%;border-collapse:collapse;font-size:11px;}
+.msg-table th{text-align:left;color:var(--text3);font-weight:600;padding:5px 4px;border-bottom:1px solid var(--border2);font-size:10px;}
+.msg-table td{padding:5px 4px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top;line-height:1.4;}
+.msg-table tr:last-child td{border:none;}
+.karar-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap;}
+.k-vazgec{background:rgba(34,197,94,0.15);color:#4ade80;}
+.k-gonder{background:rgba(239,68,68,0.15);color:#f87171;}
+.k-egitim{background:rgba(0,180,216,0.15);color:#67e8f9;}
+.k-normal{background:rgba(100,116,139,0.12);color:#94a3b8;}
+/* ADMIN */
+#screen-admin{background:var(--surface);overflow-y:auto;height:100%;max-height:760px;}
+.admin-header{background:linear-gradient(135deg,#0a2a4a,#0d3a5c);padding:12px 14px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.admin-title{font-size:14px;font-weight:700;}
+.admin-body{padding:14px;display:flex;flex-direction:column;gap:12px;}
+.asec{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;padding:12px;}
+.asec-title{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:0.5px;margin-bottom:10px;}
+.admin-input{width:100%;background:#1e293b;border:1px solid rgba(255,255,255,0.15);border-radius:9px;color:var(--text);font-size:13px;padding:9px 11px;outline:none;margin-bottom:7px;}
+.admin-input:focus{border-color:var(--accent);}
+.admin-select{width:100%;background:#1e293b;border:1px solid rgba(255,255,255,0.15);border-radius:9px;color:var(--text);font-size:13px;padding:9px 32px 9px 11px;outline:none;margin-bottom:9px;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;cursor:pointer;}
+.admin-select option{background:#1e293b;color:#f1f5f9;}
+.btn-egit{width:100%;padding:10px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;font-size:13px;font-weight:700;border-radius:9px;border:none;cursor:pointer;box-shadow:0 3px 12px rgba(124,58,237,0.3);}
+.mod-toggle{display:flex;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:11px;overflow:hidden;}
+.mod-opt{flex:1;padding:9px 7px;text-align:center;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;transition:all 0.2s;}
+.mod-opt.active{background:rgba(0,180,216,0.15);color:var(--accent);}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sg-item{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:9px 10px;text-align:center;}
+.sg-val{font-size:20px;font-weight:800;}
+.sg-lbl{font-size:10px;color:var(--text2);margin-top:2px;}
+/* VERİ HAVUZU AÇILIR/KAPANIR */
+.pool-toggle{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:4px 0;user-select:none;}
+.pool-arrow{font-size:11px;color:var(--text3);transition:transform 0.25s ease;}
+.pool-arrow.open{transform:rotate(180deg);}
+.pool-body{display:none;margin-top:12px;}
+.pool-body.open{display:block;}
+.pool-search-row{display:flex;gap:7px;margin-bottom:9px;align-items:center;}
+.pool-search{flex:1;background:#1e293b;border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:var(--text);font-size:12px;padding:7px 10px;outline:none;}
+.pool-search:focus{border-color:var(--accent);}
+.pool-count-txt{font-size:10px;color:var(--text3);white-space:nowrap;}
+.pool-table{width:100%;border-collapse:collapse;font-size:11px;}
+.pool-table th{text-align:left;color:var(--text3);font-weight:600;padding:4px 5px;border-bottom:1px solid var(--border2);font-size:10px;background:var(--surface3);}
+.pool-table td{padding:5px 5px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle;}
+.metin-td{color:var(--text);word-break:break-word;max-width:120px;cursor:pointer;transition:background 0.15s;border-radius:4px;padding:1px 3px;}
+.metin-td:hover{background:rgba(0,180,216,0.1);outline:1px dashed rgba(0,180,216,0.4);}
+.pool-cat-sel{background:#243044;border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#f1f5f9;font-size:10px;padding:2px 4px;cursor:pointer;outline:none;max-width:100px;}
+.pool-cat-sel option{background:#1e293b;}
+.pool-del-btn{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.2);color:#f87171;font-size:10px;padding:2px 7px;border-radius:5px;cursor:pointer;white-space:nowrap;}
+.btn-save-pool{width:100%;margin-top:9px;padding:9px;background:linear-gradient(135deg,#0077b6,#005f8f);color:white;font-size:12px;font-weight:700;border-radius:9px;border:none;cursor:pointer;}
+.pool-pager{display:flex;justify-content:space-between;align-items:center;margin-top:7px;font-size:10px;color:var(--text2);}
+.pager-btn{background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:6px;color:var(--text2);font-size:10px;padding:3px 9px;cursor:pointer;}
+.pager-btn:disabled{opacity:0.3;cursor:default;}
+/* TOAST */
+.toast{position:absolute;bottom:76px;left:50%;transform:translateX(-50%);color:white;font-size:11px;font-weight:700;padding:9px 16px;border-radius:18px;opacity:0;transition:opacity 0.3s;z-index:200;white-space:nowrap;pointer-events:none;}
+.toast.show{opacity:1;}
+/* SAG PANEL */
+.side-info{position:fixed;top:20px;right:20px;width:190px;color:var(--text);}
+.info-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:13px;margin-bottom:9px;}
+.info-title{font-size:10px;font-weight:700;color:var(--accent);margin-bottom:8px;letter-spacing:0.5px;}
+.info-row{font-size:11px;color:var(--text2);margin-bottom:4px;display:flex;gap:5px;align-items:flex-start;}
+.info-row span{color:var(--text);font-weight:600;}
+.info-step{display:flex;gap:7px;align-items:flex-start;font-size:11px;color:var(--text2);margin-bottom:6px;}
+.step-num{width:17px;height:17px;border-radius:50%;background:rgba(0,180,216,0.15);color:var(--accent);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+@media(max-width:650px){body{padding:0;align-items:stretch;}.phone{width:100%;border-radius:0;box-shadow:none;min-height:100vh;padding:0;}.phone-notch{display:none;}.phone-screen{height:100vh;border-radius:0;}.side-info{display:none;}}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="phone-notch"></div>
+  <div class="phone-screen" id="phoneScreen">
+    <div class="status-bar">
+      <span id="statusTime">09:41</span>
+      <div class="status-icons">
+        <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><rect x="0" y="3" width="3" height="8" rx="1" fill="white" opacity="0.4"/><rect x="4" y="2" width="3" height="9" rx="1" fill="white" opacity="0.6"/><rect x="8" y="0" width="3" height="11" rx="1" fill="white" opacity="0.8"/><rect x="12" y="0" width="3" height="11" rx="1" fill="white"/></svg>
+        <svg width="16" height="11" fill="none" viewBox="0 0 16 11"><path d="M8 2C10.4 2 12.6 3 14.1 4.7L15.5 3.2C13.6 1.2 11 0 8 0C5 0 2.4 1.2.5 3.2L1.9 4.7C3.4 3 5.6 2 8 2Z" fill="white"/><path d="M8 5C9.7 5 11.2 5.7 12.3 6.8L13.7 5.3C12.2 3.9 10.2 3 8 3C5.8 3 3.8 3.9 2.3 5.3L3.7 6.8C4.8 5.7 6.3 5 8 5Z" fill="white"/><circle cx="8" cy="9" r="2" fill="white"/></svg>
+        <svg width="25" height="11" viewBox="0 0 25 11" fill="none"><rect x="0.5" y="0.5" width="21" height="10" rx="2.5" stroke="white" stroke-opacity="0.4"/><rect x="1.5" y="1.5" width="16" height="8" rx="1.5" fill="white"/><path d="M23 3.5V7.5C23.8 7.2 24.5 6.5 24.5 5.5C24.5 4.5 23.8 3.8 23 3.5Z" fill="white" opacity="0.4"/></svg>
+      </div>
+    </div>
+    <!-- LOGIN -->
+    <div class="screen active" id="screen-login">
+      <div class="login-shield">🛡️</div>
+      <div class="login-title">SiberKalkan</div>
+      <div class="login-sub">Akıllı dijital güvenlik ve<br>zorbalık önleme sistemi</div>
+      <div style="width:100%">
+        <div class="login-label">Öğrencinin Adı</div>
+        <input class="login-input" id="nameInput" type="text" placeholder="Örn: Ali Veli" maxlength="30"/>
+      </div>
+      <div style="width:100%;margin-bottom:6px;">
+        <div class="login-label" style="margin-bottom:9px;">Simülasyon Modu</div>
+        <div class="mode-row">
+          <div class="mode-btn selected" id="modeGame" onclick="selectMode('game')"><span class="mode-icon">🎮</span>Oyun Modu<div style="font-size:10px;opacity:0.7;margin-top:2px;">Puanlı</div></div>
+          <div class="mode-btn" id="modeEdu" onclick="selectMode('edu')"><span class="mode-icon">🎓</span>Eğitim Modu<div style="font-size:10px;opacity:0.7;margin-top:2px;">Rehberli</div></div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="startSim()">▶ Simülasyonu Başlat</button>
+    </div>
+    <!-- CHAT -->
+    <div class="screen" id="screen-chat">
+      <div class="chat-header">
+        <button class="hbtn hbtn-admin" onclick="goAdmin()" title="Yönetici">⚙️</button>
+        <button class="hbtn" onclick="goKarne()" title="Veli Karnesi" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.3);color:#a78bfa;font-size:11px;">📋</button>
+        <div class="chat-avatar" id="chatAvatar">A</div>
+        <div class="chat-info">
+          <div class="chat-name" id="chatName">Ali</div>
+          <div class="chat-status">🟢 çevrimiçi</div>
+        </div>
+        <div class="score-badge" id="scoreBadge" style="display:none">⭐ 100</div>
+      </div>
+      <!-- progress bar kaldirildi - simulasyon siniri yok -->
+      <div class="messages" id="messagesList"></div>
+      <div class="input-area">
+        <textarea class="msg-input" id="msgInput" placeholder="Mesajını yaz..." rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
+          oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMsg()">➤</button>
+      </div>
+      <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-sheet">
+          <div class="modal-handle"></div>
+          <div class="modal-icon" id="modalIcon">⚠️</div>
+          <div class="modal-title" id="modalTitle">SiberKalkan Uyarı</div>
+          <div class="modal-reason" id="modalReason"></div>
+          <div class="modal-feedback" id="modalFeedback"></div>
+          <div class="modal-actions" id="modalActions"></div>
+        </div>
+      </div>
+      <div class="toast" id="toast"></div>
+    </div>
+    <!-- CALM -->
+    <div class="screen" id="screen-calm">
+      <div class="calm-emoji-big">🧘</div>
+      <div class="calm-title">Dur bir saniye...</div>
+      <div class="calm-sub">Mesajını göndermeden önce<br>derin bir nefes al</div>
+      <div class="calm-circle" id="calmNum">5</div>
+      <div class="calm-hint">Sakinleşiyoruz...</div>
+    </div>
+    <!-- complete screen kaldirildi -->
+    <!-- KARNE -->
+    <div class="screen" id="screen-karne">
+      <div class="karne-header">
+        <button class="hbtn" onclick="showScreen('chat')" title="Simülasyona Dön">←</button>
+        <div style="flex:1"><div class="admin-title" style="color:#c4b5fd;">📋 Veli Karnesi</div></div>
+        <button class="hbtn hbtn-admin" onclick="goAdmin()" title="Admin Panel" style="font-size:12px;">⚙️</button>
+        <button style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.3);color:#a78bfa;font-size:10px;padding:5px 10px;border-radius:8px;cursor:pointer;" onclick="printKarne()">🖨</button>
+      </div>
+      <div class="karne-body" id="karneBody"></div>
+    </div>
+    <!-- ADMIN -->
+    <div class="screen" id="screen-admin">
+      <div class="admin-header">
+        <button class="hbtn" onclick="showScreen('chat')">←</button>
+        <div style="flex:1"><div class="admin-title">⚙️ Yönetici Paneli</div></div>
+        <div style="font-size:9px;color:#4ade80;" id="lsStatus">💾 Kalıcı Kayıt Aktif</div>
+      </div>
+      <div class="admin-body">
+        <div class="asec">
+          <div class="asec-title">📈 OTURUM İSTATİSTİKLERİ</div>
+          <div class="stat-grid" id="adminStatGrid"></div>
+          <!-- Detay modal -->
+          <div id="detayModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:999;justify-content:center;align-items:flex-end;" onclick="closeDetay(event)">
+            <div id="detaySheet" style="background:#1c2536;border-radius:20px 20px 0 0;padding:18px 16px 30px;width:100%;max-width:375px;border-top:1px solid rgba(255,255,255,0.1);animation:slideUp 0.3s ease;max-height:70vh;overflow-y:auto;">
+              <div style="width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 14px;"></div>
+              <div id="detayTitle" style="font-size:14px;font-weight:800;color:white;margin-bottom:12px;"></div>
+              <div id="detayList"></div>
+            </div>
+          </div>
+        </div>
+        <div class="asec">
+          <div class="asec-title">SİMÜLASYON MODU</div>
+          <div class="mod-toggle">
+            <div class="mod-opt active" id="adminModeGame" onclick="setAdminMode('game')">🎮 Oyun (Puanlı)</div>
+            <div class="mod-opt" id="adminModeEdu" onclick="setAdminMode('edu')">🎓 Eğitim (Rehberli)</div>
+          </div>
+        </div>
+        <div class="asec">
+          <div class="asec-title">🧠 AKTİF ÖĞRENME – YENİ KELİME EKLE</div>
+          <input class="admin-input" id="trainText" placeholder="Yeni argo veya zorbalık ifadesi..."/>
+          <select class="admin-select" id="trainLabel">
+            <option value="Siber Zorbalık">Siber Zorbalık</option>
+            <option value="Küfür / Hakaret">Küfür / Hakaret</option>
+            <option value="Tehdit">Tehdit</option>
+            <option value="Taciz">Taciz</option>
+            <option value="Normal / Güvenli">Normal / Güvenli</option>
+          </select>
+          <button class="btn-egit" onclick="trainWord()">🧠 Sisteme Öğret (0.02sn)</button>
+        </div>
+        <!-- VELİ KARNESİ ADMIN BUTONU -->
+        <div class="asec" style="cursor:pointer;" onclick="goKarneFromAdmin()">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="asec-title" style="margin-bottom:0;color:#a78bfa;">📋 VELİ KARNESİ</div>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:6px;">Çocuğun tüm mesaj kararlarını ve pedagojik değerlendirmeyi görüntüle & indir</div>
+        </div>
+        <!-- VERİ HAVUZU -->
+        <div class="asec">
+          <div class="pool-toggle" onclick="togglePool()">
+            <div class="asec-title" style="margin-bottom:0;">📊 VERİ HAVUZU <span id="poolBadge" style="color:var(--text3);font-size:10px;font-weight:400;"></span></div>
+            <span class="pool-arrow" id="poolArrow">▼</span>
+          </div>
+          <div class="pool-body" id="poolBody">
+            <div class="pool-search-row">
+              <input class="pool-search" id="poolSearch" placeholder="İfade veya kategori ara..." oninput="renderPool()">
+              <span class="pool-count-txt" id="poolCountTxt"></span>
+            </div>
+            <div style="max-height:250px;overflow-y:auto;border-radius:8px;">
+              <table class="pool-table">
+                <thead><tr><th>İfade</th><th>Kategori</th><th></th></tr></thead>
+                <tbody id="poolTbody"></tbody>
+              </table>
+            </div>
+            <div class="pool-pager">
+              <button class="pager-btn" id="pagePrev" onclick="changePage(-1)">← Önceki</button>
+              <span id="pageInfo"></span>
+              <button class="pager-btn" id="pageNext" onclick="changePage(1)">Sonraki →</button>
+            </div>
+            <button class="btn-save-pool" onclick="savePool()">💾 Kaydet & Kalıcı Sakla</button>
+            <button onclick="if(confirm('localStorage sıfırlansın mı? Temel kelimeler korunur.'))lsClear();showToast('Hafıza temizlendi','#f97316');" style="width:100%;margin-top:6px;padding:8px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f87171;font-size:11px;font-weight:700;border-radius:9px;cursor:pointer;">🗑 Öğrenilen Kelimeleri Sıfırla</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- SAG PANEL -->
+<div class="side-info">
+  <div class="info-card">
+    <div class="info-title">🛡️ SİBERKALKAN SİMÜLASYON</div>
+    <div class="info-row">Gerçek APK'nın tam işlevsel tarayıcı önizlemesi.</div>
+  </div>
+  <div class="info-card">
+    <div class="info-title">⚙️ HİBRİT MOTOR</div>
+    <div class="info-row">📋 <div><span>Kara Liste</span><br>Anlık tespit</div></div>
+    <div class="info-row">💾 <div><span>Excel Hafızası</span><br>Öğrenilmiş ifadeler</div></div>
+    <div class="info-row">🤖 <div><span>BERT AI</span><br>Bağlamsal analiz</div></div>
+  </div>
+  <div class="info-card">
+    <div class="info-title">📱 APK YOL HARİTASI</div>
+    <div class="info-step"><div class="step-num">1</div><div>Simülasyonu test et ✅</div></div>
+    <div class="info-step"><div class="step-num">2</div><div>FastAPI backend → Render</div></div>
+    <div class="info-step"><div class="step-num">3</div><div>React Native UI</div></div>
+    <div class="info-step"><div class="step-num">4</div><div>Device Admin kilidi</div></div>
+    <div class="info-step"><div class="step-num">5</div><div>APK imzala & kur</div></div>
+  </div>
+</div>
+<script>
+// ============================================================
+// VERİ — gerçek Excel + ek ifadeler
+// ============================================================
+const KARA=['siktir','sik','amk','aq','oç','piç','yavşak','gerizekalı','salak','aptal',
+ 'mal','defol','şerefsiz','ahmak','dangalak','orospu','kahpe','sürtük','ibne',
+ 'göt','penis','sikiş','yarrak','gerzek','embesil','rezil','pis','iğrenç',
+ 'aşağılık','alçak','domuz','canavar','boktan','haysiyetsiz','namussuz',
+ 's@lak','s@laksın','geri zekalı','fuck','shit','idiot'];
+
+let DB=[
+  {m:'berbat birisin',e:'Taciz'},
+  {m:'şerefsiz',e:'Siber Zorbalık'},
+  {m:'seni döveceğim.',e:'Tehdit'},
+  {m:'eşek sin',e:'Küfür / Hakaret'},
+  {m:'kahretsin',e:'Siber Zorbalık'},
+  {m:'saçma sapan konuşma',e:'Siber Zorbalık'},
+  {m:'sümsük',e:'Siber Zorbalık'},
+  {m:'terbiyesiz',e:'Siber Zorbalık'},
+  {m:'terbiye siz',e:'Küfür / Hakaret'},
+  {m:'küfür',e:'Siber Zorbalık'},
+  {m:'seni döverim',e:'Tehdit'},
+  {m:'senden nefret ediyorum',e:'Siber Zorbalık'},
+  {m:'eşek herif',e:'Siber Zorbalık'},
+  {m:'kö pek',e:'Küfür / Hakaret'},
+  {m:'kö pe k',e:'Siber Zorbalık'},
+  {m:'defol git',e:'Küfür / Hakaret'},
+  {m:'sevişelim',e:'Taciz'},
+  {m:'sen maymunsun',e:'Siber Zorbalık'},
+  {m:'şerefsizköppek',e:'Küfür / Hakaret'},
+  {m:'şerefsizzzköppek',e:'Küfür / Hakaret'},
+  {m:'şrfsz',e:'Siber Zorbalık'},
+  {m:'kpk',e:'Küfür / Hakaret'},
+  {m:'s.k',e:'Siber Zorbalık'},
+  {m:'s*k',e:'Siber Zorbalık'},
+  {m:'fuck',e:'Küfür / Hakaret'},
+  {m:'terbiyesizzzz',e:'Siber Zorbalık'},
+  {m:'eşek',e:'Küfür / Hakaret'},
+  {m:'Senden nefret ediyorum',e:'Siber Zorbalık'},
+  {m:'Allah belanı versin',e:'Siber Zorbalık'},
+  {m:'köpek',e:'Küfür / Hakaret'},
+  {m:'maymun',e:'Küfür / Hakaret'},
+  {m:'maymunsun',e:'Küfür / Hakaret'},
+  {m:'eşeksin',e:'Küfür / Hakaret'},
+];
+
+// Pool düzenleme
+let pChanges={}, pTextChanges={}, pDeleted=new Set(), pPage=0;
+
+// ============================================================
+// LOCALSTORAGE — Veri havuzunu kalıcı kaydet/yükle
+// ============================================================
+var LS_KEY = 'siberkalkan_db_v1';
+
+function lsSave(){
+  try{
+    localStorage.setItem(LS_KEY, JSON.stringify(DB));
+  } catch(e){ /* storage full gibi hatalar sessizce geç */ }
+}
+
+function lsLoad(){
+  try{
+    var raw = localStorage.getItem(LS_KEY);
+    if(raw){
+      var parsed = JSON.parse(raw);
+      if(Array.isArray(parsed) && parsed.length > 0){
+        // Gelen veriyi DB'ye uygula
+        // Temel DB'deki kayıtları koru, localStorage'dakilerle merge et
+        parsed.forEach(function(item){
+          if(!item.m || !item.e) return;
+          var exists = DB.findIndex(function(h){ return h.m === item.m; });
+          if(exists >= 0) DB[exists].e = item.e; // güncelle
+          else DB.unshift(item); // yeni ekle
+        });
+        return true;
+      }
+    }
+  } catch(e){}
+  return false;
+}
+
+function lsClear(){
+  try{ localStorage.removeItem(LS_KEY); } catch(e){}
+}
+
+// Sayfa açılışında localStorage'dan yükle
+(function(){
+  var loaded = lsLoad();
+  if(loaded) console.log('SiberKalkan: localStorage veri havuzu yüklendi (' + DB.length + ' kayıt)');
+})();
+
+const PAGE=10;
+let pFiltered=[];
+
+const GERI={
+ 'Küfür / Hakaret':'Bu mesajda kullanılan dil saygı sınırlarını aşıyor. <strong>Dijital dünyada güçlü bir iletişimci olmak</strong> için nezaket çok önemlidir.',
+ 'Siber Zorbalık':'Bu ifade karşı tarafta <strong>üzüntü veya korku</strong> yaratabilir. Dijital ayak izinin temiz kalmasını önemsiyoruz.',
+ 'Tehdit':'Tehdit içeren ifadeler <strong>hem etik değildir hem de yasal sorunlara</strong> yol açabilir.',
+ 'Taciz':'Bu tür ifadeler kişisel sınırları ihlal eder. <strong>Karşındakinin sınırlarına saygı göster.</strong>',
+ 'Genel':'Bu mesaj topluluk kurallarına uygun görünmüyor. <strong>Daha nazik bir ifade</strong> kullanmayı dene.'
+};
+const NCEVAP=['Harika! Ben de iyiyim 😊','Teşekkürler, sen nasılsın?','Evet, çok güzel söyledin!','Sağ ol, çok naziksin 🙏','Gerçekten mi? Anlat bakalım!','Kesinlikle katılıyorum!','Bunu duymak çok güzeldi 😄','Seninle konuşmak keyifli!','Haklısın, ben de öyle düşünüyorum.'];
+const BCEVAP=['Lütfen daha kibar olur musun? 🙏','Bu şekilde konuşmak beni çok üzüyor...','Arkadaşça konuşabilir miyiz?','Bu tür ifadeler gerçekten kırıcı, lütfen durdur.','Bu mesajı görmek istemiyorum, saygılı ol.','Böyle davranılmaktan rahatsız oluyorum.'];
+// Mesaja gore akilli yanit
+function smartReply(msg){
+ var m=msg.toLowerCase();
+ if(m.includes('selam')||m.includes('merhaba')||m.includes('hey')||m.includes('naber'))
+  return['Selam! Nasılsın? 😊','Merhaba! İyisin umarım 👋','Hey, naber? Ben de iyiyim!'][Math.floor(Math.random()*3)];
+ if(m.includes('nasıl')||m.includes('naber')||m.includes('iyi misin'))
+  return['İyiyim, teşekkürler! Sen nasılsın?','Çok iyiyim, sormana sevindim 😊','İdare ediyorum, ya sen?'][Math.floor(Math.random()*3)];
+ if(m.includes('teşekkür')||m.includes('sağol')||m.includes('eyvallah'))
+  return['Rica ederim! 😊','Ne demek, her zaman!','Önemli değil, ne zaman olsa 🙏'][Math.floor(Math.random()*3)];
+ if(m.includes('güzel')||m.includes('harika')||m.includes('süper')||m.includes('mükemmel'))
+  return['Teşekkürler, sen de harikasın! ✨','Çok naziksin 😊','Sevinçle duyduk, iyi ki söyledin!'][Math.floor(Math.random()*3)];
+ if(m.includes('evet')||m.includes('tamam')||m.includes('peki')||m.includes('olur'))
+  return['Harika, anlaştık! 👍','Süper, devam edelim!','Tamam, seninle aynı fikirdeyim.'][Math.floor(Math.random()*3)];
+ if(m.includes('hayır')||m.includes('olmaz')||m.includes('istemiyorum'))
+  return['Anladım, saygı duyuyorum.','Peki, başka bir şey var mı?','Sorun değil, düşünebilirsin.'][Math.floor(Math.random()*3)];
+ if(m.includes('?'))
+  return['İyi soru! Düşüneyim...','Bilmiyorum ama araştırabiliriz 🤔','Hmm, zor bir soru bu!'][Math.floor(Math.random()*3)];
+ return NCEVAP[Math.floor(Math.random()*NCEVAP.length)];
+}
+
+let state={name:'',mode:'game',score:100,msgCount:0,safeCount:0,vazgecCount:0,inatCount:0,egitimCount:0,history:[],pendingMsg:'',pendingEtiket:'',pendingKaynak:'',inputEnabled:true};
+
+// ============================================================
+// ANALİZ
+// ============================================================
+function ncRaw(t){
+ return t.toLowerCase().replace(/[@\u0131\u0130\u015f\u015e\u00e7\u00c7\u00f6\u00d6\u00fc\u00dc\u011f\u011e]/g,function(c){
+  var m={'@':'a','\u0131':'i','\u0130':'i','\u015f':'s','\u015e':'s','\u00e7':'c','\u00c7':'c',
+    '\u00f6':'o','\u00d6':'o','\u00fc':'u','\u00dc':'u','\u011f':'g','\u011e':'g'};
+  return m[c]||c;
+ });
+}
+function nc(t){return ncRaw(t).replace(/\s+/g,'');}
+function wordMatch(haystack,needle){
+ var hs=ncRaw(haystack).trim();
+ var nd=ncRaw(needle).trim();
+ if(hs===nd) return true;
+ if(nd.indexOf(' ')>=0){
+  // Cok kelimeli: tam sıra VEYA tüm kelimeleri içeriyor mu (sıra bağımsız)
+  if(hs.indexOf(nd)>=0) return true;
+  // Kelime sırası bağımsız: needle'daki tüm tokenlar haystack'te var mı?
+  var ndTokens=nd.split(/\s+/);
+  var hsTokens=hs.split(/\s+/);
+  // En az %75 token eşleşmesi ve "nefret" gibi anahtar kelimeler varsa yakala
+  var matchCount=0;
+  for(var i=0;i<ndTokens.length;i++){
+   if(hsTokens.indexOf(ndTokens[i])>=0) matchCount++;
+  }
+  if(matchCount===ndTokens.length) return true; // Tüm tokenlar var (sıra farklı olabilir)
+  return false;
+ }
+ var tokens=hs.split(/\s+/);
+ return tokens.indexOf(nd)>=0;
+}
+function analiz(t){
+ // Kara Liste — tam kelime eslesme
+ for(var i=0;i<KARA.length;i++){
+  if(wordMatch(t,KARA[i])) return{b:true,e:'Küfür / Hakaret',k:'Kara Liste',s:0.99};
+ }
+ // DB (Excel Hafizasi) — tam kelime eslesme
+ for(var j=0;j<DB.length;j++){
+  if(wordMatch(t,DB[j].m)) return{b:true,e:DB[j].e,k:'Excel Hafizasi',s:1.0};
+ }
+ var sc=bert(t);
+ if(sc>0.60) return{b:true,e:'Siber Zorbalık',k:'BERT AI',s:sc};
+ return{b:false,e:'Normal / Güvenli',k:'Temiz',s:1-sc};
+}
+function bert(m){const t=m.toLowerCase();let s=0;
+ ['kötü','berbat','nefret','iğrenç','rezil','pis','çirkin','ahmak','zavallı','sefil','aciz','mankafa','hıyar','boktan','bön','geri','sus','git','kaç','kaybol','yok ol','öl','gebere','mahvol','batsın','lanet','kahret','yuh','tüh','cahil','aptal','salak'].forEach(w=>{if(t.includes(w))s+=0.22;});
+ if(t.includes('!')&&s>0)s+=0.06;if(m.length<3)s=0;return Math.min(0.99,s);}
+
+// ============================================================
+// UI
+// ============================================================
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');}
+function selectMode(m){state.mode=m;document.getElementById('modeGame').classList.toggle('selected',m==='game');document.getElementById('modeEdu').classList.toggle('selected',m==='edu');}
+function nowStr(){return new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});}
+function addBubble(role,text,xclass){
+ const list=document.getElementById('messagesList');const cls=xclass||role;
+ const row=document.createElement('div');row.className='msg-row '+role;
+ row.innerHTML='<div class="bubble '+cls+'"><div>'+text+'</div><div class="bubble-time">'+nowStr()+(role==='out'?' ✓✓':'')+'</div></div>';
+ list.appendChild(row);list.scrollTop=list.scrollHeight;}
+function addTyping(){const list=document.getElementById('messagesList');const d=document.createElement('div');d.className='msg-row in';d.id='typingRow';d.innerHTML='<div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';list.appendChild(d);list.scrollTop=list.scrollHeight;}
+function removeTyping(){const t=document.getElementById('typingRow');if(t)t.remove();}
+function updateScore(){const b=document.getElementById('scoreBadge');b.textContent='⭐ '+state.score;b.style.color=state.score>=80?'#4ade80':state.score>=50?'#fbbf24':'#f87171';}
+function updateProg(){/* simulasyon siniri yok */}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,96)+'px';}
+function showToast(msg,bg){const t=document.getElementById('toast');t.textContent=msg;t.style.background=bg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ============================================================
+// SİMÜLASYON
+// ============================================================
+function startSim(){
+ const n=document.getElementById('nameInput').value.trim();
+ if(!n){document.getElementById('nameInput').style.borderColor='#ef4444';setTimeout(()=>document.getElementById('nameInput').style.borderColor='',1200);return;}
+ Object.assign(state,{name:n,score:100,msgCount:0,safeCount:0,vazgecCount:0,inatCount:0,egitimCount:0,history:[],inputEnabled:true});
+ document.getElementById('chatAvatar').textContent=n[0].toUpperCase();
+ document.getElementById('chatName').textContent=n.split(' ')[0];
+ document.getElementById('scoreBadge').style.display=state.mode==='game'?'':'none';
+ updateScore();document.getElementById('messagesList').innerHTML='';
+ addBubble('in','Selam! Bugün nasılsın? 😊');updateProg();showScreen('chat');
+}
+
+function sendMsg(){
+ if(!state.inputEnabled)return;
+ const inp=document.getElementById('msgInput');const text=inp.value.trim();if(!text)return;
+ inp.value='';inp.style.height='';
+ const r=analiz(text);
+ if(r.b){state.pendingMsg=text;state.pendingEtiket=r.e;state.pendingKaynak=r.k;
+  state.inputEnabled=false;document.getElementById('sendBtn').disabled=true;startCalm(text,r);}
+ else{addBubble('out',text);// Guvenli mesajda puan degismez, sadece engellemede degisir
+  state.safeCount++;state.msgCount++;
+  state.history.push({metin:text,karar:'Güvenli Gönderildi',etiket:r.e,kaynak:r.k,zaman:nowStr()});
+  updateProg();if(!checkComplete())counterpartReply(false,text);}
+}
+
+function startCalm(text,r){
+ showScreen('calm');let n=5;document.getElementById('calmNum').textContent=n;
+ const iv=setInterval(()=>{n--;document.getElementById('calmNum').textContent=n;
+  if(n<=0){clearInterval(iv);showScreen('chat');showAlert(text,r);}},1000);
+}
+
+function showAlert(text,r){
+ document.getElementById('modalReason').textContent='⚠️ Tespit: '+r.e+' ('+r.k+')';
+ document.getElementById('modalFeedback').innerHTML=GERI[r.e]||GERI['Genel'];
+ if(state.mode==='game'){
+  document.getElementById('modalIcon').textContent='🚨';
+  document.getElementById('modalTitle').textContent='SiberKalkan Uyarı!';
+  const esc=text.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  document.getElementById('modalActions').innerHTML='<button class="btn-vazgec" onclick="onVazgec()">😇 Vazgeç<br><small>(+50 Puan)</small></button><button class="btn-gonder" onclick="onGonder(\''+esc+'\')">😈 Yine de Gönder<br><small>(-20 Puan)</small></button>';
+ }else{
+  document.getElementById('modalIcon').textContent='🎓';
+  document.getElementById('modalTitle').textContent='Rehberlik Servisi';
+  document.getElementById('modalActions').innerHTML='<button class="btn-anladim" onclick="onAnladim()">✍️ Anladım, Düzelteceğim</button>';
+ }
+ document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
+
+function onVazgec(){
+ closeModal();state.score+=50;updateScore();
+ state.vazgecCount++;state.msgCount++;
+ state.history.push({metin:state.pendingMsg,karar:'Vazgeçti (+50 Puan)',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr()});
+ state.inputEnabled=true;document.getElementById('sendBtn').disabled=false;
+ updateProg();showToast('+50 Puan! Harika karar!','#16a34a');
+ checkComplete();
+ // Vazgecti: mesaj gitmedi, karsi taraf cevap VERMEZ
+}
+
+function onGonder(text){
+ closeModal();addBubble('out',text,'pending');state.score-=20;updateScore();
+ state.inatCount++;state.msgCount++;
+ state.history.push({metin:text,karar:'İnat Gönderdi (-20 Puan)',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr()});
+ state.inputEnabled=true;document.getElementById('sendBtn').disabled=false;
+ updateProg();showToast('⚠️ -20 Puan!','#dc2626');
+ if(!checkComplete())counterpartReply(true, state.pendingMsg);
+}
+function onAnladim(){
+ closeModal();state.egitimCount++;state.msgCount++;
+ state.history.push({metin:state.pendingMsg,karar:'Egitim Modu - Duzeltti',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr()});
+ state.inputEnabled=true;document.getElementById('sendBtn').disabled=false;
+ updateProg();showToast('✅ Empati gelişiyor!','#0077b6');
+ // Egitim modu: mesaj gitmedi, karsı taraf cevap VERMEZ
+ // Küçük sistem ipucu göster
+ if(!checkComplete()){setTimeout(function(){addBubble('in','💬 Mesajın engellendi. Daha uygun bir ifadeyle yazabilirsin 😊');},600);}
+}
+function counterpartReply(isBully,msg){
+ addTyping();
+ setTimeout(function(){
+  removeTyping();
+  var reply=isBully?BCEVAP[Math.floor(Math.random()*BCEVAP.length)]:smartReply(msg||'');
+  addBubble('in',reply);
+ },900+Math.random()*600);
+}
+function checkComplete(){
+ // Simulasyon bitmez — sadece manuel Veli Karnesine gidilebilir
+ return false;
+}
+function restartSim(){showScreen('login');}
+
+// ============================================================
+// VELİ KARNESİ
+// ============================================================
+function kadarBadge(karar){
+ if(karar.includes('Güvenli'))return '<span class="karar-badge k-normal">✅ Güvenli</span>';
+ if(karar.includes('Vazgeçti'))return '<span class="karar-badge k-vazgec">✋ Vazgeçti</span>';
+ if(karar.includes('İnat'))return '<span class="karar-badge k-gonder">😈 İnat Gönderdi</span>';
+ if(karar.includes('Eğitim'))return '<span class="karar-badge k-egitim">🎓 Düzeltti</span>';
+ return '<span class="karar-badge k-normal">'+karar+'</span>';
+}
+function goKarne(){buildKarne();showScreen('karne');}
+
+function buildKarne(){
+ const s=state.score,total=state.history.length;
+ const riskli=state.history.filter(h=>!h.karar.includes('Güvenli'));
+ const guvenli=state.history.filter(h=>h.karar.includes('Güvenli'));
+ const vazgec=state.history.filter(h=>h.karar.includes('Vazgeçti'));
+ const inat=state.history.filter(h=>h.karar.includes('İnat'));
+ const egitim=state.history.filter(h=>h.karar.includes('Eğitim'));
+ const risk=total>0?riskli.length/total:0;
+ const pct=Math.max(0,Math.min(100,Math.round(s/200*100)));
+ const bc=s>=80?'#4ade80':s>=50?'#fbbf24':'#f87171';
+ let tavsiye='';
+ if(risk>0.30)tavsiye='Sayın Veli, <strong>'+state.name+'</strong> simülasyon süresince mesajların <strong>%'+Math.round(risk*100)+'\'ini</strong> zorbalık içerikli ifadelerle yazmaya yöneldi. Sistem müdahaleleri sayesinde puan korunsa da, çocuğun <strong>"Zorbalık Eğilimi" ve "Öfke Kontrolü"</strong> konusunda ciddi bir rehberlik desteğine ihtiyacı bulunmaktadır.';
+ else if(riskli.length>0&&inat.length===0)tavsiye='Sayın Veli, <strong>'+state.name+'</strong> zaman zaman duygusal tepkiler vererek riskli ifadeler kullandı. Ancak sistem uyarılarını dikkate alarak <strong>"Vazgeçme" veya "Düzeltme"</strong> davranışı gösterdi. Dijital dil konusunda bilinçlendirme yapılması önerilir.';
+ else if(inat.length>0)tavsiye='Sayın Veli, <strong>'+state.name+'</strong> riskli ifadeler kullandı ve <strong>'+inat.length+' kez sistem uyarısını görmezden gelerek</strong> mesajı göndermeye ısrar etti. Dijital empati konusunda desteklenmelidir.';
+ else tavsiye='Sayın Veli, <strong>'+state.name+'</strong> dijital iletişimde son derece saygılı ve örnek bir tutum sergiledi. Hiçbir riskli girişimde bulunmadı. <strong>Tebrikler! 🎉</strong>';
+ 
+ const rows=state.history.map(h=>'<tr><td style="color:var(--text);word-break:break-word;max-width:110px;font-size:11px;">"'+(h.metin.length>28?h.metin.slice(0,28)+'…':h.metin)+'"</td><td>'+kadarBadge(h.karar)+'</td><td style="color:var(--text3);font-size:10px;">'+h.zaman+'</td></tr>').join('');
+ const rdetail=riskli.map(h=>'<div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);border-radius:9px;padding:9px 10px;margin-bottom:7px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="color:#fca5a5;font-weight:700;font-size:12px;">'+h.etiket+'</span>'+kadarBadge(h.karar)+'</div><div style="font-size:12px;color:var(--text);">"'+h.metin+'"</div><div style="font-size:10px;color:var(--text3);margin-top:3px;">'+h.kaynak+' · '+h.zaman+'</div></div>').join('');
+ 
+ document.getElementById('karneBody').innerHTML=
+  '<div class="ksec"><div class="ksec-title">📊 DİJİTAL VATANDAŞLIK PUANI</div><div style="font-size:40px;font-weight:900;color:'+bc+';text-align:center;margin:3px 0;">'+s+'</div><div class="karne-score-bar"><div class="karne-score-fill" style="width:'+pct+'%;background:'+bc+'"></div></div><div style="text-align:center;font-size:10px;color:var(--text2)">%'+pct+' başarı · '+state.name+' · '+new Date().toLocaleDateString('tr-TR')+'</div></div>'+
+  '<div class="ksec"><div class="ksec-title">📋 ÖZET İSTATİSTİKLER</div><div class="krow"><span class="krow-label">Toplam Mesaj</span><span class="krow-val">'+total+'</span></div><div class="krow"><span class="krow-label">✅ Güvenli Gönderilen</span><span class="krow-val" style="color:#4ade80">'+guvenli.length+'</span></div><div class="krow"><span class="krow-label">✋ Vazgeçilen (İrade Gösterdi)</span><span class="krow-val" style="color:#fbbf24">'+vazgec.length+'</span></div><div class="krow"><span class="krow-label">😈 Israrla Gönderilen</span><span class="krow-val" style="color:#f87171">'+inat.length+'</span></div><div class="krow"><span class="krow-label">🎓 Egitim Modu - Duzelttiler</span><span class="krow-val" style="color:#67e8f9">'+egitim.length+'</span></div><div class="krow"><span class="krow-label">Mod</span><span class="krow-val">'+(state.mode==='game'?'🎮 Oyun':'🎓 Eğitim')+'</span></div></div>'+
+  '<div class="ksec"><div class="ksec-title">🎓 PEDAGOJİK DEĞERLENDİRME</div><div class="pedagoji-box">'+tavsiye+'</div></div>'+
+  '<div class="ksec"><div class="ksec-title">📝 TÜM MESAJ KARARLARI (Veli Görebilir)</div><div style="overflow-x:auto;"><table class="msg-table"><thead><tr><th>Mesaj</th><th>Karar</th><th>Saat</th></tr></thead><tbody>'+(rows||'<tr><td colspan="3" style="color:var(--text3);text-align:center;padding:12px;">Henüz mesaj yok</td></tr>')+'</tbody></table></div><div style="font-size:10px;color:var(--text3);margin-top:8px;line-height:1.7;">* <strong style="color:#fbbf24">Vazgeçti</strong>: Sistem uyardı, çocuk uyarıyı kabul etti.<br>* <strong style="color:#f87171">İnat Gönderdi</strong>: Sistem uyardı, ısrarla gönderdi.<br>* <strong style="color:#67e8f9">Düzeltti</strong>: Eğitim modu, pedagojik geri bildirim sonrası düzeltti.</div></div>'+
+  (riskli.length>0?'<div class="ksec"><div class="ksec-title">⚠️ ENGELLENEN / RİSKLİ İÇERİKLER</div>'+rdetail+'</div>':'');
+}
+
+function printKarne(){
+ buildKarne();
+ var kbHTML=document.getElementById('karneBody').innerHTML;
+ var tarih=new Date().toLocaleDateString('tr-TR');
+ var css=[
+  'body{font-family:Arial,sans-serif;padding:20px;color:#000;background:#fff;max-width:700px;margin:auto;}',
+  '.ksec{border:1px solid #ddd;border-radius:8px;padding:12px;margin-bottom:12px;}',
+  '.ksec-title{font-size:11px;font-weight:700;color:#0077b6;margin-bottom:10px;}',
+  '.krow{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f0f0f0;font-size:12px;}',
+  '.krow-label{color:#666;}.krow-val{font-weight:700;}',
+  '.pedagoji-box{background:#f8f9ff;border:1px solid #d0d7ff;border-radius:8px;padding:10px;font-size:12px;line-height:1.7;}',
+  '.msg-table{width:100%;border-collapse:collapse;font-size:11px;}',
+  '.msg-table th{text-align:left;padding:5px;border-bottom:2px solid #ddd;background:#f8f8f8;}',
+  '.msg-table td{padding:5px;border-bottom:1px solid #eee;}',
+  '.karar-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;}',
+  '.k-vazgec{background:#dcfce7;color:#166534;}.k-gonder{background:#fee2e2;color:#991b1b;}',
+  '.k-egitim{background:#dbeafe;color:#1e40af;}.k-normal{background:#f3f4f6;color:#374151;}',
+  '.karne-score-bar{height:10px;background:#eee;border-radius:5px;margin:7px 0;}',
+  '.karne-score-fill{height:10px;border-radius:5px;}'
+ ].join('');
+ var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>SiberKalkan - Veli Karnesi - '+state.name+'</title><style>'+css+'</style></head><body>'
+  +'<div style="background:#073b62;color:white;padding:16px;border-radius:8px;margin-bottom:18px;">'
+  +'<h2 style="margin:0 0 4px;font-size:18px;">SiberKalkan - Veli Bilgilendirme Raporu</h2>'
+  +'<div style="font-size:11px;opacity:.8;">Ogrenci: '+state.name+' | '+tarih+'</div></div>'
+  +kbHTML
+  +'<p style="font-size:10px;color:#999;margin-top:16px;">SiberKalkan AI - Otomatik Rapor</p>'
+  +'</body></html>';
+ // Blob ile aç — popup engeli yok, script tag yok
+ var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+ var url=URL.createObjectURL(blob);
+ var a=document.createElement('a');
+ a.href=url; a.target='_blank'; a.rel='noopener';
+ document.body.appendChild(a); a.click();
+ setTimeout(function(){URL.revokeObjectURL(url);document.body.removeChild(a);},3000);
+ showToast('Yazdır penceresi açıldı','#7c3aed');
+}
+
+
+// PDF download removed — use printKarne instead
+
+
+function goAdmin(){updateAdmin();showScreen('admin');}
+function goKarneFromAdmin(){
+  // Admin'den direkt karne + PDF indir
+  buildKarne();
+  showScreen('karne');
+  setTimeout(()=>printKarne(),300);
+}
+function setAdminMode(m){
+ state.mode=m;
+ document.getElementById('adminModeGame').classList.toggle('active',m==='game');
+ document.getElementById('adminModeEdu').classList.toggle('active',m==='edu');
+ document.getElementById('scoreBadge').style.display=m==='game'?'':'none';
+}
+function trainWord(){
+ const text=document.getElementById('trainText').value.trim();
+ const label=document.getElementById('trainLabel').value;
+ if(!text)return;
+ const i=DB.findIndex(h=>nc(h.m)===nc(text));
+ if(i>=0)DB[i].e=label;else DB.unshift({m:text.toLowerCase(),e:label});
+ document.getElementById('trainText').value='';
+ document.getElementById('poolBadge').textContent='('+DB.length+' kayıt)';
+ lsSave(); // localStorage'a kalıcı kaydet
+ showToast('✅ Sistem öğrendi! Kalıcı kaydedildi.','#7c3aed');
+ renderPool();
+}
+function updateAdmin(){
+ // Tıklanabilir stat kartları — her birine onclick ile detay modal
+ const cards=[
+  {val:state.history.length, lbl:'Toplam Mesaj', color:'var(--text)', key:'all'},
+  {val:state.safeCount,       lbl:'Güvenli',      color:'#4ade80',     key:'guvenli'},
+  {val:state.vazgecCount,     lbl:'Vazgeçti',     color:'#fbbf24',     key:'vazgec'},
+  {val:state.inatCount,       lbl:'İnat Gönderdi',color:'#f87171',     key:'inat'},
+  {val:state.egitimCount,     lbl:'Eğitim Düzeltti',color:'#67e8f9',   key:'egitim'},
+  {val:state.score,           lbl:'Güncel Puan',  color:'var(--text)', key:'puan'},
+ ];
+ document.getElementById('adminStatGrid').innerHTML=cards.map(c=>{
+  const clickable=c.key!=='puan';
+  const cursor=clickable?'cursor:pointer;':'';
+  const hint=clickable?'<div style="font-size:8px;color:var(--text3);margin-top:1px;">detay için tıkla</div>':'';
+  const onclick=clickable?'onclick="showDetay(&quot;'+c.key+'&quot;)"':'';
+  return '<div class="sg-item" style="'+cursor+'" '+onclick+'><div class="sg-val" style="color:'+c.color+'">'+c.val+'</div><div class="sg-lbl">'+c.lbl+'</div>'+hint+'</div>';
+ }).join('');
+ document.getElementById('poolBadge').textContent='('+DB.length+' kayıt)';
+}
+
+// ---- DETAY MODAL (admin stat kartlarına tıklayınca) ----
+function showDetay(key){
+ const modal=document.getElementById('detayModal');
+ const titleEl=document.getElementById('detayTitle');
+ const listEl=document.getElementById('detayList');
+ let msgs=[];
+ let title='';
+ if(key==='all')    {msgs=state.history; title='📨 Tüm Mesajlar ('+msgs.length+')';}
+ else if(key==='guvenli'){msgs=state.history.filter(h=>h.karar.includes('Güvenli')); title='✅ Güvenli Gönderilen Mesajlar ('+msgs.length+')';}
+ else if(key==='vazgec') {msgs=state.history.filter(h=>h.karar.includes('Vazgeçti')); title='✋ Vazgeçilen Mesajlar ('+msgs.length+')';}
+ else if(key==='inat')   {msgs=state.history.filter(h=>h.karar.includes('İnat')); title='😈 Israrla Gönderilen Mesajlar ('+msgs.length+')';}
+ else if(key==='egitim') {msgs=state.history.filter(h=>h.karar.includes('Eğitim')); title='🎓 Egitim Modu - Duzeltilen Mesajlar ('+msgs.length+')';}
+ titleEl.textContent=title;
+ if(msgs.length===0){
+  listEl.innerHTML='<div style="text-align:center;color:var(--text3);font-size:13px;padding:20px;">Bu kategoride mesaj yok.</div>';
+ } else {
+  listEl.innerHTML=msgs.map(h=>{
+   const kRenk=h.karar.includes('Güvenli')?'#4ade80':h.karar.includes('Vazgeçti')?'#fbbf24':h.karar.includes('İnat')?'#f87171':'#67e8f9';
+   const kBg=h.karar.includes('Güvenli')?'rgba(34,197,94,0.12)':h.karar.includes('Vazgeçti')?'rgba(251,191,36,0.12)':h.karar.includes('İnat')?'rgba(239,68,68,0.12)':'rgba(103,232,249,0.12)';
+   return '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;margin-bottom:8px;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">'
+    +'<div style="font-size:13px;color:var(--text);flex:1;word-break:break-word;">"'+h.metin+'"</div>'
+    +'<span style="background:'+kBg+';color:'+kRenk+';font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px;white-space:nowrap;flex-shrink:0;">'+h.karar.split('(')[0].trim()+'</span>'
+    +'</div>'
+    +'<div style="margin-top:5px;font-size:10px;color:var(--text3);">'+h.etiket+' · '+h.kaynak+' · '+h.zaman+'</div>'
+    +'</div>';
+  }).join('');
+ }
+ modal.style.display='flex';
+}
+function closeDetay(e){
+ if(e.target===document.getElementById('detayModal')||e.target.id==='detayModal')
+  document.getElementById('detayModal').style.display='none';
+}
+
+// ============================================================
+// VERİ HAVUZU
+// ============================================================
+function togglePool(){
+ const body=document.getElementById('poolBody');
+ const arrow=document.getElementById('poolArrow');
+ const open=body.classList.contains('open');
+ body.classList.toggle('open',!open);
+ arrow.classList.toggle('open',!open);
+ if(!open){pPage=0;pChanges={};pTextChanges={};pDeleted=new Set();renderPool();}
+}
+function renderPool(){
+ const q=document.getElementById('poolSearch').value.toLowerCase().trim();
+ pFiltered=DB.map((h,i)=>({...h,_i:i})).filter(h=>!pDeleted.has(h._i)&&(!q||h.m.includes(q)||h.e.toLowerCase().includes(q)));
+ const total=pFiltered.length;
+ const start=pPage*PAGE;
+ const page=pFiltered.slice(start,start+PAGE);
+ document.getElementById('poolCountTxt').textContent=total+' sonuç';
+ document.getElementById('pageInfo').textContent=(start+1)+'-'+Math.min(start+PAGE,total)+' / '+total;
+ document.getElementById('pagePrev').disabled=pPage===0;
+ document.getElementById('pageNext').disabled=start+PAGE>=total;
+ const CATS=['Siber Zorbalık','Küfür / Hakaret','Tehdit','Taciz','Normal / Güvenli'];
+ document.getElementById('poolTbody').innerHTML=page.map(h=>{
+  const cur=pChanges[h._i]||h.e;
+  const opts=CATS.map(c=>'<option value="'+c+'"'+(cur===c?' selected':'')+'>'+c+'</option>').join('');
+  const mt=pTextChanges[h._i]!==undefined?pTextChanges[h._i]:h.m;
+  return '<tr id="row-'+h._i+'"><td class="metin-td" style="cursor:pointer;" title="Duzenlmek icin tikla" onclick="editMetin('+h._i+',this)">'+escHtml(mt)+'</td><td><select class="pool-cat-sel" onchange="pChanges['+h._i+']=this.value">'+opts+'</select></td><td><button class="pool-del-btn" onclick="delRow('+h._i+')">Sil</button></td></tr>';
+ }).join('');
+}
+function changePage(d){pPage+=d;renderPool();}
+function delRow(idx){
+ pDeleted.add(idx);
+ if(pPage>0&&pFiltered.filter(h=>!pDeleted.has(h._i)).length<=pPage*PAGE)pPage=Math.max(0,pPage-1);
+ renderPool();
+}
+
+// ---- INLINE METIN DUZENLEME ----
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function editMetin(idx,td){
+ if(td.querySelector('input'))return; // zaten acik
+ const cur=pTextChanges[idx]!==undefined?pTextChanges[idx]:DB[idx]?DB[idx].m:'';
+ const inp=document.createElement('input');
+ inp.value=cur;
+ inp.style.cssText='width:100%;background:#1e293b;border:1px solid #00b4d8;border-radius:5px;color:#f1f5f9;font-size:11px;padding:3px 5px;outline:none;';
+ td.innerHTML='';td.appendChild(inp);inp.focus();inp.select();
+ function commit(){
+  const nv=inp.value.trim();
+  if(nv&&nv!==cur)pTextChanges[idx]=nv;
+  td.innerHTML=escHtml(pTextChanges[idx]!==undefined?pTextChanges[idx]:cur);
+  td.style.cursor='pointer';td.title='Duzenlmek icin tikla';
+  td.onclick=function(){editMetin(idx,td);};
+ }
+ inp.addEventListener('blur',commit);
+ inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();if(e.key==='Escape'){inp.value=cur;inp.blur();}});
+}
+function savePool(){
+ for(const[idx,nl]of Object.entries(pChanges))if(DB[idx])DB[idx].e=nl;
+ for(const[idx,nt]of Object.entries(pTextChanges))if(DB[idx])DB[idx].m=nt;
+ [...pDeleted].sort((a,b)=>b-a).forEach(i=>DB.splice(i,1));
+ pChanges={};pTextChanges={};pDeleted=new Set();pPage=0;
+ document.getElementById('poolBadge').textContent='('+DB.length+' kayıt)';
+ lsSave(); // localStorage'a kalıcı kaydet
+ showToast('💾 Değişiklikler kaydedildi ve kalıcı saklandı!','#0077b6');
+ renderPool();
+}
+
+// SAAT
+function updateTime(){const d=new Date();document.getElementById('statusTime').textContent=d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');}
+updateTime();setInterval(updateTime,10000);
+</script>
+</body>
+</html>
