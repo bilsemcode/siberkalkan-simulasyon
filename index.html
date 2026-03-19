@@ -518,7 +518,7 @@ function onGonder(text){
 
 function onAnladim(){
  closeModal();state.egitimCount++;state.msgCount++;
- state.history.push({metin:state.pendingMsg,karar:'Egitim Modu - Duzeltti',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr()});
+ state.history.push({metin:state.pendingMsg,karar:'Eğitim Modu - Düzeltti',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr()});
  state.inputEnabled=true;document.getElementById('sendBtn').disabled=false;
  showToast('✅ Empati gelişiyor!','#0077b6');
  setTimeout(function(){addBubble('in','💬 Mesajın engellendi. Daha uygun bir ifadeyle yazabilirsin 😊');},600);
