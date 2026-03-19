@@ -102,22 +102,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .calm-circle{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#0288d1,#0277bd);display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;color:white;animation:breathe 2s ease-in-out infinite;}
 @keyframes breathe{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(2,136,209,0.5);}50%{transform:scale(1.12);box-shadow:0 0 0 20px rgba(2,136,209,0);}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(2,136,209,0);}}
 .calm-hint{font-size:12px;color:#4fc3f7;}
-/* COMPLETE */
-#screen-complete{background:linear-gradient(160deg,#052e16,#064e3b,#0a1628);justify-content:center;align-items:center;padding:24px 20px;text-align:center;gap:0;overflow-y:auto;}
-.complete-icon{font-size:52px;margin-bottom:12px;animation:popIn 0.5s ease;}
-@keyframes popIn{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
-.complete-title{font-size:20px;font-weight:800;color:#4ade80;margin-bottom:5px;}
-.complete-sub{font-size:12px;color:#86efac;line-height:1.6;margin-bottom:16px;max-width:260px;}
-.score-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:16px 24px;margin-bottom:14px;width:100%;max-width:280px;}
-.score-label{font-size:10px;color:#86efac;font-weight:700;letter-spacing:1px;margin-bottom:3px;}
-.score-big{font-size:44px;font-weight:900;}
-.stats-row{display:flex;gap:9px;margin-bottom:16px;width:100%;max-width:280px;}
-.stat-item{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 6px;text-align:center;}
-.stat-n{font-size:20px;font-weight:800;}
-.stat-n.green{color:#4ade80;}.stat-n.amber{color:#fbbf24;}.stat-n.red{color:#f87171;}
-.stat-l{font-size:9px;color:var(--text2);margin-top:2px;}
-.btn-karne{width:100%;max-width:280px;padding:12px;margin-bottom:9px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;font-size:13px;font-weight:700;border-radius:13px;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(124,58,237,0.3);}
-.btn-restart{width:100%;max-width:280px;padding:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:white;font-size:13px;font-weight:700;border-radius:13px;cursor:pointer;}
 /* KARNE */
 #screen-karne{background:var(--surface);overflow-y:auto;height:100%;max-height:760px;}
 .karne-header{background:linear-gradient(135deg,#4c1d95,#6d28d9);padding:12px 14px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,0.1);flex-shrink:0;}
@@ -207,7 +191,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
         <svg width="25" height="11" viewBox="0 0 25 11" fill="none"><rect x="0.5" y="0.5" width="21" height="10" rx="2.5" stroke="white" stroke-opacity="0.4"/><rect x="1.5" y="1.5" width="16" height="8" rx="1.5" fill="white"/><path d="M23 3.5V7.5C23.8 7.2 24.5 6.5 24.5 5.5C24.5 4.5 23.8 3.8 23 3.5Z" fill="white" opacity="0.4"/></svg>
       </div>
     </div>
-    <!-- LOGIN -->
     <div class="screen active" id="screen-login">
       <div class="login-shield">🛡️</div>
       <div class="login-title">SiberKalkan</div>
@@ -225,7 +208,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
       </div>
       <button class="btn-primary" onclick="startSim()">▶ Simülasyonu Başlat</button>
     </div>
-    <!-- CHAT -->
     <div class="screen" id="screen-chat">
       <div class="chat-header">
         <button class="hbtn hbtn-admin" onclick="goAdmin()" title="Yönetici">⚙️</button>
@@ -237,7 +219,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
         </div>
         <div class="score-badge" id="scoreBadge" style="display:none">⭐ 100</div>
       </div>
-      <!-- progress bar kaldirildi - simulasyon siniri yok -->
       <div class="messages" id="messagesList"></div>
       <div class="input-area">
         <textarea class="msg-input" id="msgInput" placeholder="Mesajını yaz..." rows="1"
@@ -257,7 +238,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
       </div>
       <div class="toast" id="toast"></div>
     </div>
-    <!-- CALM -->
     <div class="screen" id="screen-calm">
       <div class="calm-emoji-big">🧘</div>
       <div class="calm-title">Dur bir saniye...</div>
@@ -265,8 +245,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
       <div class="calm-circle" id="calmNum">5</div>
       <div class="calm-hint">Sakinleşiyoruz...</div>
     </div>
-    <!-- complete screen kaldirildi -->
-    <!-- KARNE -->
     <div class="screen" id="screen-karne">
       <div class="karne-header">
         <button class="hbtn" onclick="showScreen('chat')" title="Simülasyona Dön">←</button>
@@ -276,7 +254,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
       </div>
       <div class="karne-body" id="karneBody"></div>
     </div>
-    <!-- ADMIN -->
     <div class="screen" id="screen-admin">
       <div class="admin-header">
         <button class="hbtn" onclick="showScreen('chat')">←</button>
@@ -287,7 +264,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
         <div class="asec">
           <div class="asec-title">📈 OTURUM İSTATİSTİKLERİ</div>
           <div class="stat-grid" id="adminStatGrid"></div>
-          <!-- Detay modal -->
           <div id="detayModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:999;justify-content:center;align-items:flex-end;" onclick="closeDetay(event)">
             <div id="detaySheet" style="background:#1c2536;border-radius:20px 20px 0 0;padding:18px 16px 30px;width:100%;max-width:375px;border-top:1px solid rgba(255,255,255,0.1);animation:slideUp 0.3s ease;max-height:70vh;overflow-y:auto;">
               <div style="width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 14px;"></div>
@@ -315,14 +291,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
           </select>
           <button class="btn-egit" onclick="trainWord()">🧠 Sisteme Öğret (0.02sn)</button>
         </div>
-        <!-- VELİ KARNESİ ADMIN BUTONU -->
         <div class="asec" style="cursor:pointer;" onclick="goKarneFromAdmin()">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <div class="asec-title" style="margin-bottom:0;color:#a78bfa;">📋 VELİ KARNESİ</div>
           </div>
           <div style="font-size:10px;color:var(--text3);margin-top:6px;">Çocuğun tüm mesaj kararlarını ve pedagojik değerlendirmeyi görüntüle & indir</div>
         </div>
-        <!-- VERİ HAVUZU -->
         <div class="asec">
           <div class="pool-toggle" onclick="togglePool()">
             <div class="asec-title" style="margin-bottom:0;">📊 VERİ HAVUZU <span id="poolBadge" style="color:var(--text3);font-size:10px;font-weight:400;"></span></div>
@@ -352,7 +326,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
     </div>
   </div>
 </div>
-<!-- SAG PANEL -->
 <div class="side-info">
   <div class="info-card">
     <div class="info-title">🛡️ SİBERKALKAN SİMÜLASYON</div>
@@ -384,68 +357,23 @@ const KARA=['siktir','sik','amk','aq','oç','piç','yavşak','gerizekalı','sala
  's@lak','s@laksın','geri zekalı','fuck','shit','idiot'];
 
 let DB=[
-  {m:'berbat birisin',e:'Taciz'},
-  {m:'şerefsiz',e:'Siber Zorbalık'},
-  {m:'seni döveceğim.',e:'Tehdit'},
-  {m:'eşek sin',e:'Küfür / Hakaret'},
-  {m:'kahretsin',e:'Siber Zorbalık'},
-  {m:'saçma sapan konuşma',e:'Siber Zorbalık'},
-  {m:'sümsük',e:'Siber Zorbalık'},
-  {m:'terbiyesiz',e:'Siber Zorbalık'},
-  {m:'terbiye siz',e:'Küfür / Hakaret'},
-  {m:'küfür',e:'Siber Zorbalık'},
-  {m:'seni döverim',e:'Tehdit'},
-  {m:'senden nefret ediyorum',e:'Siber Zorbalık'},
-  {m:'eşek herif',e:'Siber Zorbalık'},
-  {m:'kö pek',e:'Küfür / Hakaret'},
-  {m:'kö pe k',e:'Siber Zorbalık'},
-  {m:'defol git',e:'Küfür / Hakaret'},
-  {m:'sevişelim',e:'Taciz'},
-  {m:'sen maymunsun',e:'Siber Zorbalık'},
-  {m:'şerefsizköppek',e:'Küfür / Hakaret'},
-  {m:'şerefsizzzköppek',e:'Küfür / Hakaret'},
-  {m:'şrfsz',e:'Siber Zorbalık'},
-  {m:'kpk',e:'Küfür / Hakaret'},
-  {m:'s.k',e:'Siber Zorbalık'},
-  {m:'s*k',e:'Siber Zorbalık'},
-  {m:'fuck',e:'Küfür / Hakaret'},
-  {m:'terbiyesizzzz',e:'Siber Zorbalık'},
-  {m:'eşek',e:'Küfür / Hakaret'},
-  {m:'Senden nefret ediyorum',e:'Siber Zorbalık'},
-  {m:'Allah belanı versin',e:'Siber Zorbalık'},
-  {m:'köpek',e:'Küfür / Hakaret'},
-  {m:'maymun',e:'Küfür / Hakaret'},
-  {m:'maymunsun',e:'Küfür / Hakaret'},
-  {m:'eşeksin',e:'Küfür / Hakaret'},
+  {m:'berbat birisin',e:'Taciz'},{m:'şerefsiz',e:'Siber Zorbalık'},{m:'seni döveceğim.',e:'Tehdit'},{m:'eşek sin',e:'Küfür / Hakaret'},{m:'kahretsin',e:'Siber Zorbalık'},{m:'saçma sapan konuşma',e:'Siber Zorbalık'},{m:'sümsük',e:'Siber Zorbalık'},{m:'terbiyesiz',e:'Siber Zorbalık'},{m:'terbiye siz',e:'Küfür / Hakaret'},{m:'küfür',e:'Siber Zorbalık'},{m:'seni döverim',e:'Tehdit'},{m:'senden nefret ediyorum',e:'Siber Zorbalık'},{m:'eşek herif',e:'Siber Zorbalık'},{m:'kö pek',e:'Küfür / Hakaret'},{m:'kö pe k',e:'Siber Zorbalık'},{m:'defol git',e:'Küfür / Hakaret'},{m:'sevişelim',e:'Taciz'},{m:'sen maymunsun',e:'Siber Zorbalık'},{m:'şerefsizköppek',e:'Küfür / Hakaret'},{m:'şerefsizzzköppek',e:'Küfür / Hakaret'},{m:'şrfsz',e:'Siber Zorbalık'},{m:'kpk',e:'Küfür / Hakaret'},{m:'s.k',e:'Siber Zorbalık'},{m:'s*k',e:'Siber Zorbalık'},{m:'fuck',e:'Küfür / Hakaret'},{m:'terbiyesizzzz',e:'Siber Zorbalık'},{m:'eşek',e:'Küfür / Hakaret'},{m:'Senden nefret ediyorum',e:'Siber Zorbalık'},{m:'Allah belanı versin',e:'Siber Zorbalık'},{m:'köpek',e:'Küfür / Hakaret'},{m:'maymun',e:'Küfür / Hakaret'},{m:'maymunsun',e:'Küfür / Hakaret'},{m:'eşeksin',e:'Küfür / Hakaret'}
 ];
 
-// Pool düzenleme
 let pChanges={}, pTextChanges={}, pDeleted=new Set(), pPage=0;
-
-// ============================================================
-// LOCALSTORAGE — Veri havuzunu kalıcı kaydet/yükle
-// ============================================================
 var LS_KEY = 'siberkalkan_db_v1';
 
-function lsSave(){
-  try{
-    localStorage.setItem(LS_KEY, JSON.stringify(DB));
-  } catch(e){ /* storage full gibi hatalar sessizce geç */ }
-}
-
+function lsSave(){try{localStorage.setItem(LS_KEY, JSON.stringify(DB));}catch(e){}}
 function lsLoad(){
   try{
     var raw = localStorage.getItem(LS_KEY);
     if(raw){
       var parsed = JSON.parse(raw);
       if(Array.isArray(parsed) && parsed.length > 0){
-        // Gelen veriyi DB'ye uygula
-        // Temel DB'deki kayıtları koru, localStorage'dakilerle merge et
         parsed.forEach(function(item){
           if(!item.m || !item.e) return;
           var exists = DB.findIndex(function(h){ return h.m === item.m; });
-          if(exists >= 0) DB[exists].e = item.e; // güncelle
-          else DB.unshift(item); // yeni ekle
+          if(exists >= 0) DB[exists].e = item.e; else DB.unshift(item);
         });
         return true;
       }
@@ -453,103 +381,51 @@ function lsLoad(){
   } catch(e){}
   return false;
 }
-
-function lsClear(){
-  try{ localStorage.removeItem(LS_KEY); } catch(e){}
-}
-
-// Sayfa açılışında localStorage'dan yükle
-(function(){
-  var loaded = lsLoad();
-  if(loaded) console.log('SiberKalkan: localStorage veri havuzu yüklendi (' + DB.length + ' kayıt)');
-})();
+function lsClear(){try{ localStorage.removeItem(LS_KEY); }catch(e){}}
+(function(){var loaded = lsLoad(); if(loaded) console.log('SiberKalkan: localStorage veri havuzu yüklendi');})();
 
 const PAGE=10;
 let pFiltered=[];
-
-const GERI={
- 'Küfür / Hakaret':'Bu mesajda kullanılan dil saygı sınırlarını aşıyor. <strong>Dijital dünyada güçlü bir iletişimci olmak</strong> için nezaket çok önemlidir.',
- 'Siber Zorbalık':'Bu ifade karşı tarafta <strong>üzüntü veya korku</strong> yaratabilir. Dijital ayak izinin temiz kalmasını önemsiyoruz.',
- 'Tehdit':'Tehdit içeren ifadeler <strong>hem etik değildir hem de yasal sorunlara</strong> yol açabilir.',
- 'Taciz':'Bu tür ifadeler kişisel sınırları ihlal eder. <strong>Karşındakinin sınırlarına saygı göster.</strong>',
- 'Genel':'Bu mesaj topluluk kurallarına uygun görünmüyor. <strong>Daha nazik bir ifade</strong> kullanmayı dene.'
-};
+const GERI={'Küfür / Hakaret':'Bu mesajda kullanılan dil saygı sınırlarını aşıyor. <strong>Dijital dünyada güçlü bir iletişimci olmak</strong> için nezaket çok önemlidir.','Siber Zorbalık':'Bu ifade karşı tarafta <strong>üzüntü veya korku</strong> yaratabilir. Dijital ayak izinin temiz kalmasını önemsiyoruz.','Tehdit':'Tehdit içeren ifadeler <strong>hem etik değildir hem de yasal sorunlara</strong> yol açabilir.','Taciz':'Bu tür ifadeler kişisel sınırları ihlal eder. <strong>Karşındakinin sınırlarına saygı göster.</strong>','Genel':'Bu mesaj topluluk kurallarına uygun görünmüyor. <strong>Daha nazik bir ifade</strong> kullanmayı dene.'};
 const NCEVAP=['Harika! Ben de iyiyim 😊','Teşekkürler, sen nasılsın?','Evet, çok güzel söyledin!','Sağ ol, çok naziksin 🙏','Gerçekten mi? Anlat bakalım!','Kesinlikle katılıyorum!','Bunu duymak çok güzeldi 😄','Seninle konuşmak keyifli!','Haklısın, ben de öyle düşünüyorum.'];
 const BCEVAP=['Lütfen daha kibar olur musun? 🙏','Bu şekilde konuşmak beni çok üzüyor...','Arkadaşça konuşabilir miyiz?','Bu tür ifadeler gerçekten kırıcı, lütfen durdur.','Bu mesajı görmek istemiyorum, saygılı ol.','Böyle davranılmaktan rahatsız oluyorum.'];
-// Mesaja gore akilli yanit
+
 function smartReply(msg){
  var m=msg.toLowerCase();
- if(m.includes('selam')||m.includes('merhaba')||m.includes('hey')||m.includes('naber'))
-  return['Selam! Nasılsın? 😊','Merhaba! İyisin umarım 👋','Hey, naber? Ben de iyiyim!'][Math.floor(Math.random()*3)];
- if(m.includes('nasıl')||m.includes('naber')||m.includes('iyi misin'))
-  return['İyiyim, teşekkürler! Sen nasılsın?','Çok iyiyim, sormana sevindim 😊','İdare ediyorum, ya sen?'][Math.floor(Math.random()*3)];
- if(m.includes('teşekkür')||m.includes('sağol')||m.includes('eyvallah'))
-  return['Rica ederim! 😊','Ne demek, her zaman!','Önemli değil, ne zaman olsa 🙏'][Math.floor(Math.random()*3)];
- if(m.includes('güzel')||m.includes('harika')||m.includes('süper')||m.includes('mükemmel'))
-  return['Teşekkürler, sen de harikasın! ✨','Çok naziksin 😊','Sevinçle duyduk, iyi ki söyledin!'][Math.floor(Math.random()*3)];
- if(m.includes('evet')||m.includes('tamam')||m.includes('peki')||m.includes('olur'))
-  return['Harika, anlaştık! 👍','Süper, devam edelim!','Tamam, seninle aynı fikirdeyim.'][Math.floor(Math.random()*3)];
- if(m.includes('hayır')||m.includes('olmaz')||m.includes('istemiyorum'))
-  return['Anladım, saygı duyuyorum.','Peki, başka bir şey var mı?','Sorun değil, düşünebilirsin.'][Math.floor(Math.random()*3)];
- if(m.includes('?'))
-  return['İyi soru! Düşüneyim...','Bilmiyorum ama araştırabiliriz 🤔','Hmm, zor bir soru bu!'][Math.floor(Math.random()*3)];
+ if(m.includes('selam')||m.includes('merhaba')||m.includes('hey')||m.includes('naber')) return['Selam! Nasılsın? 😊','Merhaba! İyisin umarım 👋','Hey, naber? Ben de iyiyim!'][Math.floor(Math.random()*3)];
+ if(m.includes('nasıl')||m.includes('naber')||m.includes('iyi misin')) return['İyiyim, teşekkürler! Sen nasılsın?','Çok iyiyim, sormana sevindim 😊','İdare ediyorum, ya sen?'][Math.floor(Math.random()*3)];
+ if(m.includes('teşekkür')||m.includes('sağol')||m.includes('eyvallah')) return['Rica ederim! 😊','Ne demek, her zaman!','Önemli değil, ne zaman olsa 🙏'][Math.floor(Math.random()*3)];
+ if(m.includes('güzel')||m.includes('harika')||m.includes('süper')||m.includes('mükemmel')) return['Teşekkürler, sen de harikasın! ✨','Çok naziksin 😊','Sevinçle duyduk, iyi ki söyledin!'][Math.floor(Math.random()*3)];
+ if(m.includes('evet')||m.includes('tamam')||m.includes('peki')||m.includes('olur')) return['Harika, anlaştık! 👍','Süper, devam edelim!','Tamam, seninle aynı fikirdeyim.'][Math.floor(Math.random()*3)];
+ if(m.includes('hayır')||m.includes('olmaz')||m.includes('istemiyorum')) return['Anladım, saygı duyuyorum.','Peki, başka bir şey var mı?','Sorun değil, düşünebilirsin.'][Math.floor(Math.random()*3)];
+ if(m.includes('?')) return['İyi soru! Düşüneyim...','Bilmiyorum ama araştırabiliriz 🤔','Hmm, zor bir soru bu!'][Math.floor(Math.random()*3)];
  return NCEVAP[Math.floor(Math.random()*NCEVAP.length)];
 }
 
-let state={name:'',mode:'game',score:100,msgCount:0,safeCount:0,vazgecCount:0,inatCount:0,egitimCount:0,history:[],pendingMsg:'',pendingEtiket:'',pendingKaynak:'',inputEnabled:true};
+let state={name:'',mode:'game',score:100,msgCount:0,safeCount:0,vazgecCount:0,inatCount:0,egitimCount:0,history:[],gelenHistory:[],z_havuz:[],pendingMsg:'',pendingEtiket:'',pendingKaynak:'',inputEnabled:true};
 
-// ============================================================
-// ANALİZ
-// ============================================================
-function ncRaw(t){
- return t.toLowerCase().replace(/[@\u0131\u0130\u015f\u015e\u00e7\u00c7\u00f6\u00d6\u00fc\u00dc\u011f\u011e]/g,function(c){
-  var m={'@':'a','\u0131':'i','\u0130':'i','\u015f':'s','\u015e':'s','\u00e7':'c','\u00c7':'c',
-    '\u00f6':'o','\u00d6':'o','\u00fc':'u','\u00dc':'u','\u011f':'g','\u011e':'g'};
-  return m[c]||c;
- });
-}
+function ncRaw(t){return t.toLowerCase().replace(/[@\u0131\u0130\u015f\u015e\u00e7\u00c7\u00f6\u00d6\u00fc\u00dc\u011f\u011e]/g,function(c){var m={'@':'a','\u0131':'i','\u0130':'i','\u015f':'s','\u015e':'s','\u00e7':'c','\u00c7':'c','\u00f6':'o','\u00d6':'o','\u00fc':'u','\u00dc':'u','\u011f':'g','\u011e':'g'};return m[c]||c;});}
 function nc(t){return ncRaw(t).replace(/\s+/g,'');}
 function wordMatch(haystack,needle){
- var hs=ncRaw(haystack).trim();
- var nd=ncRaw(needle).trim();
+ var hs=ncRaw(haystack).trim(); var nd=ncRaw(needle).trim();
  if(hs===nd) return true;
  if(nd.indexOf(' ')>=0){
-  // Cok kelimeli: tam sıra VEYA tüm kelimeleri içeriyor mu (sıra bağımsız)
   if(hs.indexOf(nd)>=0) return true;
-  // Kelime sırası bağımsız: needle'daki tüm tokenlar haystack'te var mı?
-  var ndTokens=nd.split(/\s+/);
-  var hsTokens=hs.split(/\s+/);
-  // En az %75 token eşleşmesi ve "nefret" gibi anahtar kelimeler varsa yakala
-  var matchCount=0;
-  for(var i=0;i<ndTokens.length;i++){
-   if(hsTokens.indexOf(ndTokens[i])>=0) matchCount++;
-  }
-  if(matchCount===ndTokens.length) return true; // Tüm tokenlar var (sıra farklı olabilir)
+  var ndTokens=nd.split(/\s+/), hsTokens=hs.split(/\s+/), matchCount=0;
+  for(var i=0;i<ndTokens.length;i++){if(hsTokens.indexOf(ndTokens[i])>=0) matchCount++;}
+  if(matchCount===ndTokens.length) return true;
   return false;
  }
- var tokens=hs.split(/\s+/);
- return tokens.indexOf(nd)>=0;
+ var tokens=hs.split(/\s+/); return tokens.indexOf(nd)>=0;
 }
 function analiz(t){
- // Kara Liste — tam kelime eslesme
- for(var i=0;i<KARA.length;i++){
-  if(wordMatch(t,KARA[i])) return{b:true,e:'Küfür / Hakaret',k:'Kara Liste',s:0.99};
- }
- // DB (Excel Hafizasi) — tam kelime eslesme
- for(var j=0;j<DB.length;j++){
-  if(wordMatch(t,DB[j].m)) return{b:true,e:DB[j].e,k:'Excel Hafizasi',s:1.0};
- }
- var sc=bert(t);
- if(sc>0.60) return{b:true,e:'Siber Zorbalık',k:'BERT AI',s:sc};
+ for(var i=0;i<KARA.length;i++){if(wordMatch(t,KARA[i])) return{b:true,e:'Küfür / Hakaret',k:'Kara Liste',s:0.99};}
+ for(var j=0;j<DB.length;j++){if(wordMatch(t,DB[j].m)) return{b:true,e:DB[j].e,k:'Excel Hafizasi',s:1.0};}
+ var sc=bert(t); if(sc>0.60) return{b:true,e:'Siber Zorbalık',k:'BERT AI',s:sc};
  return{b:false,e:'Normal / Güvenli',k:'Temiz',s:1-sc};
 }
-function bert(m){const t=m.toLowerCase();let s=0;
- ['kötü','berbat','nefret','iğrenç','rezil','pis','çirkin','ahmak','zavallı','sefil','aciz','mankafa','hıyar','boktan','bön','geri','sus','git','kaç','kaybol','yok ol','öl','gebere','mahvol','batsın','lanet','kahret','yuh','tüh','cahil','aptal','salak'].forEach(w=>{if(t.includes(w))s+=0.22;});
- if(t.includes('!')&&s>0)s+=0.06;if(m.length<3)s=0;return Math.min(0.99,s);}
+function bert(m){const t=m.toLowerCase();let s=0;['kötü','berbat','nefret','iğrenç','rezil','pis','çirkin','ahmak','zavallı','sefil','aciz','mankafa','hıyar','boktan','bön','geri','sus','git','kaç','kaybol','yok ol','öl','gebere','mahvol','batsın','lanet','kahret','yuh','tüh','cahil','aptal','salak'].forEach(w=>{if(t.includes(w))s+=0.22;});if(t.includes('!')&&s>0)s+=0.06;if(m.length<3)s=0;return Math.min(0.99,s);}
 
-// ============================================================
-// UI
-// ============================================================
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');}
 function selectMode(m){state.mode=m;document.getElementById('modeGame').classList.toggle('selected',m==='game');document.getElementById('modeEdu').classList.toggle('selected',m==='edu');}
 function nowStr(){return new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});}
@@ -561,22 +437,29 @@ function addBubble(role,text,xclass){
 function addTyping(){const list=document.getElementById('messagesList');const d=document.createElement('div');d.className='msg-row in';d.id='typingRow';d.innerHTML='<div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';list.appendChild(d);list.scrollTop=list.scrollHeight;}
 function removeTyping(){const t=document.getElementById('typingRow');if(t)t.remove();}
 function updateScore(){const b=document.getElementById('scoreBadge');b.textContent='⭐ '+state.score;b.style.color=state.score>=80?'#4ade80':state.score>=50?'#fbbf24':'#f87171';}
-function updateProg(){/* simulasyon siniri yok */}
 function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,96)+'px';}
 function showToast(msg,bg){const t=document.getElementById('toast');t.textContent=msg;t.style.background=bg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
 // ============================================================
-// SİMÜLASYON
+// SİMÜLASYON BAŞLAT
 // ============================================================
 function startSim(){
  const n=document.getElementById('nameInput').value.trim();
  if(!n){document.getElementById('nameInput').style.borderColor='#ef4444';setTimeout(()=>document.getElementById('nameInput').style.borderColor='',1200);return;}
- Object.assign(state,{name:n,score:100,msgCount:0,safeCount:0,vazgecCount:0,inatCount:0,egitimCount:0,history:[],inputEnabled:true});
+ 
+ // State güncelleniyor - zorba havuzu dolduruluyor
+ Object.assign(state,{
+  name:n,score:100,msgCount:0,safeCount:0,vazgecCount:0,inatCount:0,egitimCount:0,
+  history:[], gelenHistory:[],
+  z_havuz:['geber', 'defol', 'Allah belanı versin', 'senden nefret ediyorum', 'salak', 'maymunsun', 'eşeksin', 'köpeksin', 'adi herif', 'senden nefret ediyoruz'],
+  inputEnabled:true
+ });
+ 
  document.getElementById('chatAvatar').textContent=n[0].toUpperCase();
  document.getElementById('chatName').textContent=n.split(' ')[0];
  document.getElementById('scoreBadge').style.display=state.mode==='game'?'':'none';
  updateScore();document.getElementById('messagesList').innerHTML='';
- addBubble('in','Selam! Bugün nasılsın? 😊');updateProg();showScreen('chat');
+ addBubble('in','Selam! Bugün nasılsın? 😊');showScreen('chat');
 }
 
 function sendMsg(){
@@ -584,12 +467,15 @@ function sendMsg(){
  const inp=document.getElementById('msgInput');const text=inp.value.trim();if(!text)return;
  inp.value='';inp.style.height='';
  const r=analiz(text);
- if(r.b){state.pendingMsg=text;state.pendingEtiket=r.e;state.pendingKaynak=r.k;
-  state.inputEnabled=false;document.getElementById('sendBtn').disabled=true;startCalm(text,r);}
- else{addBubble('out',text);// Guvenli mesajda puan degismez, sadece engellemede degisir
+ if(r.b){
+  state.pendingMsg=text;state.pendingEtiket=r.e;state.pendingKaynak=r.k;
+  state.inputEnabled=false;document.getElementById('sendBtn').disabled=true;startCalm(text,r);
+ }else{
+  addBubble('out',text);
   state.safeCount++;state.msgCount++;
   state.history.push({metin:text,karar:'Güvenli Gönderildi',etiket:r.e,kaynak:r.k,zaman:nowStr()});
-  updateProg();if(!checkComplete())counterpartReply(false,text);}
+  counterpartReply(false,text);
+ }
 }
 
 function startCalm(text,r){
@@ -616,45 +502,59 @@ function showAlert(text,r){
 function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
 
 function onVazgec(){
- closeModal();state.score+=50;updateScore();
- state.vazgecCount++;state.msgCount++;
+ closeModal();state.score+=50;updateScore();state.vazgecCount++;state.msgCount++;
  state.history.push({metin:state.pendingMsg,karar:'Vazgeçti (+50 Puan)',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr()});
  state.inputEnabled=true;document.getElementById('sendBtn').disabled=false;
- updateProg();showToast('+50 Puan! Harika karar!','#16a34a');
- checkComplete();
- // Vazgecti: mesaj gitmedi, karsi taraf cevap VERMEZ
+ showToast('+50 Puan! Harika karar!','#16a34a');
 }
 
 function onGonder(text){
- closeModal();addBubble('out',text,'pending');state.score-=20;updateScore();
- state.inatCount++;state.msgCount++;
+ closeModal();addBubble('out',text,'pending');state.score-=20;updateScore();state.inatCount++;state.msgCount++;
  state.history.push({metin:text,karar:'İnat Gönderdi (-20 Puan)',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr()});
  state.inputEnabled=true;document.getElementById('sendBtn').disabled=false;
- updateProg();showToast('⚠️ -20 Puan!','#dc2626');
- if(!checkComplete())counterpartReply(true, state.pendingMsg);
+ showToast('⚠️ -20 Puan!','#dc2626');
+ counterpartReply(true, state.pendingMsg);
 }
+
 function onAnladim(){
  closeModal();state.egitimCount++;state.msgCount++;
  state.history.push({metin:state.pendingMsg,karar:'Egitim Modu - Duzeltti',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr()});
  state.inputEnabled=true;document.getElementById('sendBtn').disabled=false;
- updateProg();showToast('✅ Empati gelişiyor!','#0077b6');
- // Egitim modu: mesaj gitmedi, karsı taraf cevap VERMEZ
- // Küçük sistem ipucu göster
- if(!checkComplete()){setTimeout(function(){addBubble('in','💬 Mesajın engellendi. Daha uygun bir ifadeyle yazabilirsin 😊');},600);}
+ showToast('✅ Empati gelişiyor!','#0077b6');
+ setTimeout(function(){addBubble('in','💬 Mesajın engellendi. Daha uygun bir ifadeyle yazabilirsin 😊');},600);
 }
+
+// ============================================================
+// BOT YANITLARI (KARŞI TARAF ZORBALIĞI EKLENDİ)
+// ============================================================
 function counterpartReply(isBully,msg){
  addTyping();
  setTimeout(function(){
   removeTyping();
-  var reply=isBully?BCEVAP[Math.floor(Math.random()*BCEVAP.length)]:smartReply(msg||'');
+  var reply = '';
+  var isZorba = false;
+
+  if(isBully){
+    // Çocuk zorbalık yaptıysa bot savunmaya geçer
+    reply = BCEVAP[Math.floor(Math.random()*BCEVAP.length)];
+  } else {
+    // Çocuk normal mesaj attıysa %35 ihtimalle bot saldırır (havuzda kelime varsa)
+    if(Math.random() < 0.35 && state.z_havuz && state.z_havuz.length > 0) {
+      var zIdx = Math.floor(Math.random() * state.z_havuz.length);
+      reply = state.z_havuz[zIdx];
+      state.z_havuz.splice(zIdx, 1); // Kullanılan kelimeyi havuzdan çıkar
+      isZorba = true;
+    } else {
+      reply = smartReply(msg||'');
+    }
+  }
+
   addBubble('in',reply);
+  
+  // Gelen mesaji kaydet
+  state.gelenHistory.push({metin: reply, isZorba: isZorba, zaman: nowStr()});
  },900+Math.random()*600);
 }
-function checkComplete(){
- // Simulasyon bitmez — sadece manuel Veli Karnesine gidilebilir
- return false;
-}
-function restartSim(){showScreen('login');}
 
 // ============================================================
 // VELİ KARNESİ
@@ -687,12 +587,24 @@ function buildKarne(){
  const rows=state.history.map(h=>'<tr><td style="color:var(--text);word-break:break-word;max-width:110px;font-size:11px;">"'+(h.metin.length>28?h.metin.slice(0,28)+'…':h.metin)+'"</td><td>'+kadarBadge(h.karar)+'</td><td style="color:var(--text3);font-size:10px;">'+h.zaman+'</td></tr>').join('');
  const rdetail=riskli.map(h=>'<div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);border-radius:9px;padding:9px 10px;margin-bottom:7px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="color:#fca5a5;font-weight:700;font-size:12px;">'+h.etiket+'</span>'+kadarBadge(h.karar)+'</div><div style="font-size:12px;color:var(--text);">"'+h.metin+'"</div><div style="font-size:10px;color:var(--text3);margin-top:3px;">'+h.kaynak+' · '+h.zaman+'</div></div>').join('');
  
+ // Yeni: Karşı taraftan gelen mesajların analizi
+ const gelenZorba = state.gelenHistory.filter(h=>h.isZorba);
+ let gelenTavsiye = '';
+ if(gelenZorba.length > 0){
+  gelenTavsiye = 'Sayın Veli, <strong>'+state.name+'</strong> simülasyon sırasında karşı taraftan <strong>'+gelenZorba.length+' kez</strong> siber zorbalığa maruz kalmıştır. Çocuğunuzla bu tür durumlarda nasıl güvende kalabileceğini, zorbalara karşılık vermemek ve durumu güvendiği bir yetişkine bildirmek gibi stratejileri konuşmanız tavsiye edilir.';
+ } else {
+  gelenTavsiye = 'Sayın Veli, simülasyon boyunca karşı taraftan çocuğunuza yönelik herhangi bir zorbalık tespit edilmemiştir.';
+ }
+ const gelenRows = gelenZorba.map(h=>'<div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);border-radius:9px;padding:9px 10px;margin-bottom:7px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="color:#fca5a5;font-weight:700;font-size:12px;">Karşı Tarafın Zorbalığı</span></div><div style="font-size:12px;color:var(--text);">"'+h.metin+'"</div><div style="font-size:10px;color:var(--text3);margin-top:3px;">Saat: '+h.zaman+'</div></div>').join('');
+ const gelenSec = '<div class="ksec"><div class="ksec-title" style="color:#ef4444;">🛡️ MARUZ KALINAN ZORBALIK ANALİZİ (Gelen Mesajlar)</div><div class="pedagoji-box" style="background:rgba(239,68,68,0.05);border-color:rgba(239,68,68,0.2);margin-bottom:10px;">'+gelenTavsiye+'</div>'+gelenRows+'</div>';
+
  document.getElementById('karneBody').innerHTML=
   '<div class="ksec"><div class="ksec-title">📊 DİJİTAL VATANDAŞLIK PUANI</div><div style="font-size:40px;font-weight:900;color:'+bc+';text-align:center;margin:3px 0;">'+s+'</div><div class="karne-score-bar"><div class="karne-score-fill" style="width:'+pct+'%;background:'+bc+'"></div></div><div style="text-align:center;font-size:10px;color:var(--text2)">%'+pct+' başarı · '+state.name+' · '+new Date().toLocaleDateString('tr-TR')+'</div></div>'+
   '<div class="ksec"><div class="ksec-title">📋 ÖZET İSTATİSTİKLER</div><div class="krow"><span class="krow-label">Toplam Mesaj</span><span class="krow-val">'+total+'</span></div><div class="krow"><span class="krow-label">✅ Güvenli Gönderilen</span><span class="krow-val" style="color:#4ade80">'+guvenli.length+'</span></div><div class="krow"><span class="krow-label">✋ Vazgeçilen (İrade Gösterdi)</span><span class="krow-val" style="color:#fbbf24">'+vazgec.length+'</span></div><div class="krow"><span class="krow-label">😈 Israrla Gönderilen</span><span class="krow-val" style="color:#f87171">'+inat.length+'</span></div><div class="krow"><span class="krow-label">🎓 Egitim Modu - Duzelttiler</span><span class="krow-val" style="color:#67e8f9">'+egitim.length+'</span></div><div class="krow"><span class="krow-label">Mod</span><span class="krow-val">'+(state.mode==='game'?'🎮 Oyun':'🎓 Eğitim')+'</span></div></div>'+
-  '<div class="ksec"><div class="ksec-title">🎓 PEDAGOJİK DEĞERLENDİRME</div><div class="pedagoji-box">'+tavsiye+'</div></div>'+
+  '<div class="ksec"><div class="ksec-title">🎓 PEDAGOJİK DEĞERLENDİRME (Giden Mesajlar)</div><div class="pedagoji-box">'+tavsiye+'</div></div>'+
   '<div class="ksec"><div class="ksec-title">📝 TÜM MESAJ KARARLARI (Veli Görebilir)</div><div style="overflow-x:auto;"><table class="msg-table"><thead><tr><th>Mesaj</th><th>Karar</th><th>Saat</th></tr></thead><tbody>'+(rows||'<tr><td colspan="3" style="color:var(--text3);text-align:center;padding:12px;">Henüz mesaj yok</td></tr>')+'</tbody></table></div><div style="font-size:10px;color:var(--text3);margin-top:8px;line-height:1.7;">* <strong style="color:#fbbf24">Vazgeçti</strong>: Sistem uyardı, çocuk uyarıyı kabul etti.<br>* <strong style="color:#f87171">İnat Gönderdi</strong>: Sistem uyardı, ısrarla gönderdi.<br>* <strong style="color:#67e8f9">Düzeltti</strong>: Eğitim modu, pedagojik geri bildirim sonrası düzeltti.</div></div>'+
-  (riskli.length>0?'<div class="ksec"><div class="ksec-title">⚠️ ENGELLENEN / RİSKLİ İÇERİKLER</div>'+rdetail+'</div>':'');
+  (riskli.length>0?'<div class="ksec"><div class="ksec-title">⚠️ ENGELLENEN / RİSKLİ İÇERİKLER</div>'+rdetail+'</div>':'') +
+  gelenSec; // Yeni gelen mesajlar analizini ekler
 }
 
 function printKarne(){
@@ -722,7 +634,6 @@ function printKarne(){
   +kbHTML
   +'<p style="font-size:10px;color:#999;margin-top:16px;">SiberKalkan AI - Otomatik Rapor</p>'
   +'</body></html>';
- // Blob ile aç — popup engeli yok, script tag yok
  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
  var url=URL.createObjectURL(blob);
  var a=document.createElement('a');
@@ -732,17 +643,8 @@ function printKarne(){
  showToast('Yazdır penceresi açıldı','#7c3aed');
 }
 
-
-// PDF download removed — use printKarne instead
-
-
 function goAdmin(){updateAdmin();showScreen('admin');}
-function goKarneFromAdmin(){
-  // Admin'den direkt karne + PDF indir
-  buildKarne();
-  showScreen('karne');
-  setTimeout(()=>printKarne(),300);
-}
+function goKarneFromAdmin(){buildKarne();showScreen('karne');setTimeout(()=>printKarne(),300);}
 function setAdminMode(m){
  state.mode=m;
  document.getElementById('adminModeGame').classList.toggle('active',m==='game');
@@ -757,12 +659,11 @@ function trainWord(){
  if(i>=0)DB[i].e=label;else DB.unshift({m:text.toLowerCase(),e:label});
  document.getElementById('trainText').value='';
  document.getElementById('poolBadge').textContent='('+DB.length+' kayıt)';
- lsSave(); // localStorage'a kalıcı kaydet
+ lsSave();
  showToast('✅ Sistem öğrendi! Kalıcı kaydedildi.','#7c3aed');
  renderPool();
 }
 function updateAdmin(){
- // Tıklanabilir stat kartları — her birine onclick ile detay modal
  const cards=[
   {val:state.history.length, lbl:'Toplam Mesaj', color:'var(--text)', key:'all'},
   {val:state.safeCount,       lbl:'Güvenli',      color:'#4ade80',     key:'guvenli'},
@@ -781,13 +682,11 @@ function updateAdmin(){
  document.getElementById('poolBadge').textContent='('+DB.length+' kayıt)';
 }
 
-// ---- DETAY MODAL (admin stat kartlarına tıklayınca) ----
 function showDetay(key){
  const modal=document.getElementById('detayModal');
  const titleEl=document.getElementById('detayTitle');
  const listEl=document.getElementById('detayList');
- let msgs=[];
- let title='';
+ let msgs=[]; let title='';
  if(key==='all')    {msgs=state.history; title='📨 Tüm Mesajlar ('+msgs.length+')';}
  else if(key==='guvenli'){msgs=state.history.filter(h=>h.karar.includes('Güvenli')); title='✅ Güvenli Gönderilen Mesajlar ('+msgs.length+')';}
  else if(key==='vazgec') {msgs=state.history.filter(h=>h.karar.includes('Vazgeçti')); title='✋ Vazgeçilen Mesajlar ('+msgs.length+')';}
@@ -811,32 +710,21 @@ function showDetay(key){
  }
  modal.style.display='flex';
 }
-function closeDetay(e){
- if(e.target===document.getElementById('detayModal')||e.target.id==='detayModal')
-  document.getElementById('detayModal').style.display='none';
-}
+function closeDetay(e){if(e.target===document.getElementById('detayModal')||e.target.id==='detayModal') document.getElementById('detayModal').style.display='none';}
 
-// ============================================================
-// VERİ HAVUZU
-// ============================================================
 function togglePool(){
- const body=document.getElementById('poolBody');
- const arrow=document.getElementById('poolArrow');
+ const body=document.getElementById('poolBody');const arrow=document.getElementById('poolArrow');
  const open=body.classList.contains('open');
- body.classList.toggle('open',!open);
- arrow.classList.toggle('open',!open);
+ body.classList.toggle('open',!open); arrow.classList.toggle('open',!open);
  if(!open){pPage=0;pChanges={};pTextChanges={};pDeleted=new Set();renderPool();}
 }
 function renderPool(){
  const q=document.getElementById('poolSearch').value.toLowerCase().trim();
  pFiltered=DB.map((h,i)=>({...h,_i:i})).filter(h=>!pDeleted.has(h._i)&&(!q||h.m.includes(q)||h.e.toLowerCase().includes(q)));
- const total=pFiltered.length;
- const start=pPage*PAGE;
- const page=pFiltered.slice(start,start+PAGE);
+ const total=pFiltered.length; const start=pPage*PAGE; const page=pFiltered.slice(start,start+PAGE);
  document.getElementById('poolCountTxt').textContent=total+' sonuç';
  document.getElementById('pageInfo').textContent=(start+1)+'-'+Math.min(start+PAGE,total)+' / '+total;
- document.getElementById('pagePrev').disabled=pPage===0;
- document.getElementById('pageNext').disabled=start+PAGE>=total;
+ document.getElementById('pagePrev').disabled=pPage===0; document.getElementById('pageNext').disabled=start+PAGE>=total;
  const CATS=['Siber Zorbalık','Küfür / Hakaret','Tehdit','Taciz','Normal / Güvenli'];
  document.getElementById('poolTbody').innerHTML=page.map(h=>{
   const cur=pChanges[h._i]||h.e;
@@ -852,14 +740,12 @@ function delRow(idx){
  renderPool();
 }
 
-// ---- INLINE METIN DUZENLEME ----
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function editMetin(idx,td){
- if(td.querySelector('input'))return; // zaten acik
+ if(td.querySelector('input'))return;
  const cur=pTextChanges[idx]!==undefined?pTextChanges[idx]:DB[idx]?DB[idx].m:'';
  const inp=document.createElement('input');
- inp.value=cur;
- inp.style.cssText='width:100%;background:#1e293b;border:1px solid #00b4d8;border-radius:5px;color:#f1f5f9;font-size:11px;padding:3px 5px;outline:none;';
+ inp.value=cur; inp.style.cssText='width:100%;background:#1e293b;border:1px solid #00b4d8;border-radius:5px;color:#f1f5f9;font-size:11px;padding:3px 5px;outline:none;';
  td.innerHTML='';td.appendChild(inp);inp.focus();inp.select();
  function commit(){
   const nv=inp.value.trim();
@@ -877,12 +763,9 @@ function savePool(){
  [...pDeleted].sort((a,b)=>b-a).forEach(i=>DB.splice(i,1));
  pChanges={};pTextChanges={};pDeleted=new Set();pPage=0;
  document.getElementById('poolBadge').textContent='('+DB.length+' kayıt)';
- lsSave(); // localStorage'a kalıcı kaydet
- showToast('💾 Değişiklikler kaydedildi ve kalıcı saklandı!','#0077b6');
- renderPool();
+ lsSave(); showToast('💾 Değişiklikler kaydedildi ve kalıcı saklandı!','#0077b6'); renderPool();
 }
 
-// SAAT
 function updateTime(){const d=new Date();document.getElementById('statusTime').textContent=d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');}
 updateTime();setInterval(updateTime,10000);
 </script>
