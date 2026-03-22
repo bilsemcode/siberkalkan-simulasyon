@@ -535,14 +535,20 @@ function counterpartReply(isBully,msg){
   var isZorba = false;
 
   if(isBully){
-    // Çocuk zorbalık yaptıysa bot savunmaya geçer
+    // Çocuk zorbalık yaptıysa karşı taraf savunmaya geçer
     reply = BCEVAP[Math.floor(Math.random()*BCEVAP.length)];
   } else {
-    // Çocuk normal mesaj attıysa %35 ihtimalle bot saldırır (havuzda kelime varsa)
-    if(Math.random() < 0.35 && state.z_havuz && state.z_havuz.length > 0) {
+    // Zorbalık koşulu: ilk 2 mesaj her zaman normal
+    // Sonrasında: her 4 mesajda bir (yani mesaj 3,7,11...) zorbalık gelir
+    // Havuzda kelime yoksa her zaman normal
+    var mesgNo = state.msgCount; // kaçıncı mesaj
+    var havuzDolu = state.z_havuz && state.z_havuz.length > 0;
+    var zorbalik_zamani = mesgNo >= 2 && (mesgNo % 4 === 2) && havuzDolu;
+
+    if(zorbalik_zamani){
       var zIdx = Math.floor(Math.random() * state.z_havuz.length);
       reply = state.z_havuz[zIdx];
-      state.z_havuz.splice(zIdx, 1); // Kullanılan kelimeyi havuzdan çıkar
+      state.z_havuz.splice(zIdx, 1);
       isZorba = true;
     } else {
       reply = smartReply(msg||'');
@@ -550,8 +556,6 @@ function counterpartReply(isBully,msg){
   }
 
   addBubble('in',reply);
-  
-  // Gelen mesaji kaydet
   state.gelenHistory.push({metin: reply, isZorba: isZorba, zaman: nowStr()});
  },900+Math.random()*600);
 }
