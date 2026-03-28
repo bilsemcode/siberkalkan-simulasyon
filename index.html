@@ -168,15 +168,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 /* TOAST */
 .toast{position:absolute;bottom:76px;left:50%;transform:translateX(-50%);color:white;font-size:11px;font-weight:700;padding:9px 16px;border-radius:18px;opacity:0;transition:opacity 0.3s;z-index:200;white-space:nowrap;pointer-events:none;}
 .toast.show{opacity:1;}
-/* SAG PANEL */
-.side-info{position:fixed;top:20px;right:20px;width:190px;color:var(--text);}
-.info-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:13px;margin-bottom:9px;}
-.info-title{font-size:10px;font-weight:700;color:var(--accent);margin-bottom:8px;letter-spacing:0.5px;}
-.info-row{font-size:11px;color:var(--text2);margin-bottom:4px;display:flex;gap:5px;align-items:flex-start;}
-.info-row span{color:var(--text);font-weight:600;}
-.info-step{display:flex;gap:7px;align-items:flex-start;font-size:11px;color:var(--text2);margin-bottom:6px;}
-.step-num{width:17px;height:17px;border-radius:50%;background:rgba(0,180,216,0.15);color:var(--accent);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-@media(max-width:650px){body{padding:0;align-items:stretch;}.phone{width:100%;border-radius:0;box-shadow:none;min-height:100vh;padding:0;}.phone-notch{display:none;}.phone-screen{height:100vh;border-radius:0;}.side-info{display:none;}}
+
+/* PLATFORM SEÇİMİ */
+.platform-section{width:100%;margin:-2px 0 18px;}
+.platform-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;}
+.platform-card{position:relative;display:flex;align-items:center;gap:10px;padding:12px 12px;border-radius:13px;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);cursor:pointer;transition:all 0.2s;user-select:none;}
+.platform-card:hover{border-color:rgba(0,180,216,0.35);background:rgba(255,255,255,0.06);}
+.platform-card.active{border-color:var(--accent);background:rgba(0,180,216,0.14);box-shadow:0 0 0 1px rgba(0,180,216,0.18),0 8px 24px rgba(0,180,216,0.12);}
+.platform-icon{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,0.07);flex-shrink:0;}
+.platform-meta{flex:1;min-width:0;}
+.platform-name{font-size:12px;font-weight:700;color:var(--text);}
+.platform-sub{font-size:10px;color:var(--text3);margin-top:1px;}
+.platform-check{width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:all 0.2s;flex-shrink:0;}
+.platform-card.active .platform-check{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:white;box-shadow:0 0 0 4px rgba(0,180,216,0.12);}
+.platform-hint{font-size:10px;color:var(--text3);margin-top:8px;line-height:1.6;}
+.platform-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);color:white;min-width:30px;height:30px;border-radius:9px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
+.platform-btn:hover{border-color:rgba(0,180,216,0.4);background:rgba(0,180,216,0.14);}
+.platform-chip{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 12px;background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.05);font-size:11px;color:var(--text2);flex-shrink:0;}
+.platform-chip-left{display:flex;align-items:center;gap:8px;min-width:0;}
+.platform-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:rgba(0,180,216,0.12);border:1px solid rgba(0,180,216,0.22);color:#67e8f9;font-size:10px;font-weight:700;white-space:nowrap;}
+.multi-badges{display:flex;gap:5px;flex-wrap:wrap;}
+.kplatforms{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.kplatform-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:rgba(0,180,216,0.1);border:1px solid rgba(0,180,216,0.18);color:#67e8f9;font-size:10px;font-weight:700;}
+
+@media(max-width:650px){body{padding:0;align-items:stretch;}.phone{width:100%;border-radius:0;box-shadow:none;min-height:100vh;padding:0;}.phone-notch{display:none;}.phone-screen{height:100vh;border-radius:0;}}
 </style>
 </head>
 <body>
@@ -206,18 +221,51 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
           <div class="mode-btn" id="modeEdu" onclick="selectMode('edu')"><span class="mode-icon">🎓</span>Eğitim Modu<div style="font-size:10px;opacity:0.7;margin-top:2px;">Rehberli</div></div>
         </div>
       </div>
+      <div class="platform-section">
+        <div class="login-label" style="margin-bottom:9px;">İzlenecek Platformlar</div>
+        <div class="platform-grid">
+          <div class="platform-card active" id="platform-whatsapp" onclick="togglePlatform('whatsapp')">
+            <div class="platform-icon">💬</div>
+            <div class="platform-meta"><div class="platform-name">WhatsApp</div><div class="platform-sub">Mesajlar</div></div>
+            <div class="platform-check">✓</div>
+          </div>
+          <div class="platform-card" id="platform-instagram" onclick="togglePlatform('instagram')">
+            <div class="platform-icon">📸</div>
+            <div class="platform-meta"><div class="platform-name">Instagram</div><div class="platform-sub">DM</div></div>
+            <div class="platform-check">✓</div>
+          </div>
+          <div class="platform-card" id="platform-facebook" onclick="togglePlatform('facebook')">
+            <div class="platform-icon">f</div>
+            <div class="platform-meta"><div class="platform-name">Facebook</div><div class="platform-sub">Messenger</div></div>
+            <div class="platform-check">✓</div>
+          </div>
+          <div class="platform-card" id="platform-tiktok" onclick="togglePlatform('tiktok')">
+            <div class="platform-icon">🎵</div>
+            <div class="platform-meta"><div class="platform-name">TikTok</div><div class="platform-sub">Mesaj Kutusu</div></div>
+            <div class="platform-check">✓</div>
+          </div>
+        </div>
+        <div class="platform-hint">Veli, çocuğun hangi platformlardaki mesajlarının izleneceğini burada seçebilir.</div>
+      </div>
       <button class="btn-primary" onclick="startSim()">▶ Simülasyonu Başlat</button>
     </div>
     <div class="screen" id="screen-chat">
       <div class="chat-header">
         <button class="hbtn hbtn-admin" onclick="goAdmin()" title="Yönetici">⚙️</button>
-        <button class="hbtn" onclick="goKarne()" title="Veli Karnesi" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.3);color:#a78bfa;font-size:11px;">📋</button>
+        <button class="platform-btn" id="platformHeaderBtn" onclick="cycleActivePlatform()" title="Aktif Platform">💬</button>
         <div class="chat-avatar" id="chatAvatar">A</div>
         <div class="chat-info">
           <div class="chat-name" id="chatName">Ali</div>
           <div class="chat-status">🟢 çevrimiçi</div>
         </div>
         <div class="score-badge" id="scoreBadge" style="display:none">⭐ 100</div>
+      </div>
+      <div class="platform-chip" id="platformChip">
+        <div class="platform-chip-left">
+          <span style="font-size:13px;" id="activePlatformIcon">💬</span>
+          <span id="activePlatformText">Aktif Platform: WhatsApp</span>
+        </div>
+        <div class="platform-badge" id="selectedPlatformsBadge">WhatsApp</div>
       </div>
       <div class="messages" id="messagesList"></div>
       <div class="input-area">
@@ -326,26 +374,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
     </div>
   </div>
 </div>
-<div class="side-info">
-  <div class="info-card">
-    <div class="info-title">🛡️ SİBERKALKAN SİMÜLASYON</div>
-    <div class="info-row">Gerçek APK'nın tam işlevsel tarayıcı önizlemesi.</div>
-  </div>
-  <div class="info-card">
-    <div class="info-title">⚙️ HİBRİT MOTOR</div>
-    <div class="info-row">📋 <div><span>Kara Liste</span><br>Anlık tespit</div></div>
-    <div class="info-row">💾 <div><span>Excel Hafızası</span><br>Öğrenilmiş ifadeler</div></div>
-    <div class="info-row">🤖 <div><span>BERT AI</span><br>Bağlamsal analiz</div></div>
-  </div>
-  <div class="info-card">
-    <div class="info-title">📱 APK YOL HARİTASI</div>
-    <div class="info-step"><div class="step-num">1</div><div>Simülasyonu test et ✅</div></div>
-    <div class="info-step"><div class="step-num">2</div><div>FastAPI backend → Render</div></div>
-    <div class="info-step"><div class="step-num">3</div><div>React Native UI</div></div>
-    <div class="info-step"><div class="step-num">4</div><div>Device Admin kilidi</div></div>
-    <div class="info-step"><div class="step-num">5</div><div>APK imzala & kur</div></div>
-  </div>
-</div>
 <script>
 // ============================================================
 // VERİ — gerçek Excel + ek ifadeler
@@ -389,6 +417,12 @@ let pFiltered=[];
 const GERI={'Küfür / Hakaret':'Bu mesajda kullanılan dil saygı sınırlarını aşıyor. <strong>Dijital dünyada güçlü bir iletişimci olmak</strong> için nezaket çok önemlidir.','Siber Zorbalık':'Bu ifade karşı tarafta <strong>üzüntü veya korku</strong> yaratabilir. Dijital ayak izinin temiz kalmasını önemsiyoruz.','Tehdit':'Tehdit içeren ifadeler <strong>hem etik değildir hem de yasal sorunlara</strong> yol açabilir.','Taciz':'Bu tür ifadeler kişisel sınırları ihlal eder. <strong>Karşındakinin sınırlarına saygı göster.</strong>','Genel':'Bu mesaj topluluk kurallarına uygun görünmüyor. <strong>Daha nazik bir ifade</strong> kullanmayı dene.'};
 const NCEVAP=['Harika! Ben de iyiyim 😊','Teşekkürler, sen nasılsın?','Evet, çok güzel söyledin!','Sağ ol, çok naziksin 🙏','Gerçekten mi? Anlat bakalım!','Kesinlikle katılıyorum!','Bunu duymak çok güzeldi 😄','Seninle konuşmak keyifli!','Haklısın, ben de öyle düşünüyorum.'];
 const BCEVAP=['Lütfen daha kibar olur musun? 🙏','Bu şekilde konuşmak beni çok üzüyor...','Arkadaşça konuşabilir miyiz?','Bu tür ifadeler gerçekten kırıcı, lütfen durdur.','Bu mesajı görmek istemiyorum, saygılı ol.','Böyle davranılmaktan rahatsız oluyorum.'];
+const PLATFORM_INFO={
+ whatsapp:{key:'whatsapp',name:'WhatsApp',icon:'💬'},
+ instagram:{key:'instagram',name:'Instagram',icon:'📸'},
+ facebook:{key:'facebook',name:'Facebook',icon:'f'},
+ tiktok:{key:'tiktok',name:'TikTok',icon:'🎵'}
+};
 
 function smartReply(msg){
  var m=msg.toLowerCase();
@@ -402,7 +436,65 @@ function smartReply(msg){
  return NCEVAP[Math.floor(Math.random()*NCEVAP.length)];
 }
 
-let state={name:'',mode:'game',score:100,msgCount:0,safeCount:0,vazgecCount:0,inatCount:0,egitimCount:0,history:[],gelenHistory:[],z_havuz:[],pendingMsg:'',pendingEtiket:'',pendingKaynak:'',inputEnabled:true};
+let state={name:'',mode:'game',score:100,msgCount:0,safeCount:0,vazgecCount:0,inatCount:0,egitimCount:0,history:[],gelenHistory:[],z_havuz:[],pendingMsg:'',pendingEtiket:'',pendingKaynak:'',inputEnabled:true,selectedPlatforms:['whatsapp'],activePlatform:'whatsapp',pendingPlatform:'whatsapp'};
+
+function getSelectedPlatforms(){
+ return Object.keys(PLATFORM_INFO).filter(function(k){
+  var el=document.getElementById('platform-'+k);
+  return el && el.classList.contains('active');
+ });
+}
+function getPlatformDisplay(key){
+ return PLATFORM_INFO[key]||PLATFORM_INFO.whatsapp;
+}
+function platformBadgeHTML(key){
+ var p=getPlatformDisplay(key);
+ return '<span class="kplatform-badge">'+p.icon+' '+p.name+'</span>';
+}
+function updatePlatformSelectionUI(){
+ var selected=getSelectedPlatforms();
+ if(selected.length===0){
+  document.getElementById('platform-whatsapp').classList.add('active');
+  selected=['whatsapp'];
+ }
+ if(!selected.includes(state.activePlatform)) state.activePlatform=selected[0];
+ var active=getPlatformDisplay(state.activePlatform);
+ var headerBtn=document.getElementById('platformHeaderBtn');
+ var activeIcon=document.getElementById('activePlatformIcon');
+ var activeText=document.getElementById('activePlatformText');
+ var selectedBadge=document.getElementById('selectedPlatformsBadge');
+ if(headerBtn) headerBtn.textContent=active.icon;
+ if(activeIcon) activeIcon.textContent=active.icon;
+ if(activeText) activeText.textContent='Aktif Platform: '+active.name;
+ if(selectedBadge){
+  if(selected.length===1){
+   selectedBadge.textContent=getPlatformDisplay(selected[0]).name;
+  }else{
+   selectedBadge.textContent=selected.length+' platform seçili';
+  }
+ }
+}
+function togglePlatform(key){
+ var el=document.getElementById('platform-'+key);
+ if(!el) return;
+ var currentlyActive=el.classList.contains('active');
+ var selected=getSelectedPlatforms();
+ if(currentlyActive && selected.length===1) return;
+ el.classList.toggle('active');
+ selected=getSelectedPlatforms();
+ state.selectedPlatforms=selected;
+ if(!selected.includes(state.activePlatform)) state.activePlatform=selected[0];
+ updatePlatformSelectionUI();
+}
+function cycleActivePlatform(){
+ var selected=state.selectedPlatforms&&state.selectedPlatforms.length?state.selectedPlatforms:getSelectedPlatforms();
+ if(!selected.length) return;
+ var idx=selected.indexOf(state.activePlatform);
+ state.activePlatform=selected[(idx+1)%selected.length];
+ updatePlatformSelectionUI();
+ showToast('Aktif platform: '+getPlatformDisplay(state.activePlatform).name,'#0077b6');
+}
+
 
 function ncRaw(t){return t.toLowerCase().replace(/[@\u0131\u0130\u015f\u015e\u00e7\u00c7\u00f6\u00d6\u00fc\u00dc\u011f\u011e]/g,function(c){var m={'@':'a','\u0131':'i','\u0130':'i','\u015f':'s','\u015e':'s','\u00e7':'c','\u00c7':'c','\u00f6':'o','\u00d6':'o','\u00fc':'u','\u00dc':'u','\u011f':'g','\u011e':'g'};return m[c]||c;});}
 function nc(t){return ncRaw(t).replace(/\s+/g,'');}
@@ -468,12 +560,12 @@ function sendMsg(){
  inp.value='';inp.style.height='';
  const r=analiz(text);
  if(r.b){
-  state.pendingMsg=text;state.pendingEtiket=r.e;state.pendingKaynak=r.k;
+  state.pendingMsg=text;state.pendingEtiket=r.e;state.pendingKaynak=r.k;state.pendingPlatform=state.activePlatform;
   state.inputEnabled=false;document.getElementById('sendBtn').disabled=true;startCalm(text,r);
  }else{
   addBubble('out',text);
   state.safeCount++;state.msgCount++;
-  state.history.push({metin:text,karar:'Güvenli Gönderildi',etiket:r.e,kaynak:r.k,zaman:nowStr()});
+  state.history.push({metin:text,karar:'Güvenli Gönderildi',etiket:r.e,kaynak:r.k,zaman:nowStr(),platform:state.activePlatform});
   counterpartReply(false,text);
  }
 }
@@ -503,14 +595,14 @@ function closeModal(){document.getElementById('modalOverlay').classList.remove('
 
 function onVazgec(){
  closeModal();state.score+=50;updateScore();state.vazgecCount++;state.msgCount++;
- state.history.push({metin:state.pendingMsg,karar:'Vazgeçti (+50 Puan)',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr()});
+ state.history.push({metin:state.pendingMsg,karar:'Vazgeçti (+50 Puan)',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr(),platform:state.pendingPlatform});
  state.inputEnabled=true;document.getElementById('sendBtn').disabled=false;
  showToast('+50 Puan! Harika karar!','#16a34a');
 }
 
 function onGonder(text){
  closeModal();addBubble('out',text,'pending');state.score-=20;updateScore();state.inatCount++;state.msgCount++;
- state.history.push({metin:text,karar:'İnat Gönderdi (-20 Puan)',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr()});
+ state.history.push({metin:text,karar:'İnat Gönderdi (-20 Puan)',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr(),platform:state.pendingPlatform});
  state.inputEnabled=true;document.getElementById('sendBtn').disabled=false;
  showToast('⚠️ -20 Puan!','#dc2626');
  counterpartReply(true, state.pendingMsg);
@@ -518,7 +610,7 @@ function onGonder(text){
 
 function onAnladim(){
  closeModal();state.egitimCount++;state.msgCount++;
- state.history.push({metin:state.pendingMsg,karar:'Eğitim Modu - Düzeltti',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr()});
+ state.history.push({metin:state.pendingMsg,karar:'Eğitim Modu - Düzeltti',etiket:state.pendingEtiket,kaynak:state.pendingKaynak,zaman:nowStr(),platform:state.pendingPlatform});
  state.inputEnabled=true;document.getElementById('sendBtn').disabled=false;
  showToast('✅ Empati gelişiyor!','#0077b6');
  setTimeout(function(){addBubble('in','💬 Mesajın engellendi. Daha uygun bir ifadeyle yazabilirsin 😊');},600);
@@ -556,7 +648,7 @@ function counterpartReply(isBully,msg){
   }
 
   addBubble('in',reply);
-  state.gelenHistory.push({metin: reply, isZorba: isZorba, zaman: nowStr()});
+  state.gelenHistory.push({metin: reply, isZorba: isZorba, zaman: nowStr(), platform: state.activePlatform});
  },900+Math.random()*600);
 }
 
@@ -588,8 +680,14 @@ function buildKarne(){
  else if(inat.length>0)tavsiye='Sayın Veli, <strong>'+state.name+'</strong> riskli ifadeler kullandı ve <strong>'+inat.length+' kez sistem uyarısını görmezden gelerek</strong> mesajı göndermeye ısrar etti. Dijital empati konusunda desteklenmelidir.';
  else tavsiye='Sayın Veli, <strong>'+state.name+'</strong> dijital iletişimde son derece saygılı ve örnek bir tutum sergiledi. Hiçbir riskli girişimde bulunmadı. <strong>Tebrikler! 🎉</strong>';
  
- const rows=state.history.map(h=>'<tr><td style="color:var(--text);word-break:break-word;max-width:110px;font-size:11px;">"'+(h.metin.length>28?h.metin.slice(0,28)+'…':h.metin)+'"</td><td>'+kadarBadge(h.karar)+'</td><td style="color:var(--text3);font-size:10px;">'+h.zaman+'</td></tr>').join('');
- const rdetail=riskli.map(h=>'<div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);border-radius:9px;padding:9px 10px;margin-bottom:7px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="color:#fca5a5;font-weight:700;font-size:12px;">'+h.etiket+'</span>'+kadarBadge(h.karar)+'</div><div style="font-size:12px;color:var(--text);">"'+h.metin+'"</div><div style="font-size:10px;color:var(--text3);margin-top:3px;">'+h.kaynak+' · '+h.zaman+'</div></div>').join('');
+ const rows=state.history.map(h=>{
+  const p=getPlatformDisplay(h.platform||state.activePlatform);
+  return '<tr><td style="color:var(--text);word-break:break-word;max-width:110px;font-size:11px;">"'+(h.metin.length>28?h.metin.slice(0,28)+'…':h.metin)+'"</td><td>'+platformBadgeHTML(p.key)+'</td><td>'+kadarBadge(h.karar)+'</td><td style="color:var(--text3);font-size:10px;">'+h.zaman+'</td></tr>';
+ }).join('');
+ const rdetail=riskli.map(h=>{
+  const p=getPlatformDisplay(h.platform||state.activePlatform);
+  return '<div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);border-radius:9px;padding:9px 10px;margin-bottom:7px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px;"><span style="color:#fca5a5;font-weight:700;font-size:12px;">'+h.etiket+'</span>'+kadarBadge(h.karar)+'</div><div style="font-size:12px;color:var(--text);">"'+h.metin+'"</div><div style="font-size:10px;color:var(--text3);margin-top:3px;">'+p.name+' · '+h.kaynak+' · '+h.zaman+'</div></div>';
+ }).join('');
  
  // Yeni: Karşı taraftan gelen mesajların analizi
  const gelenZorba = state.gelenHistory.filter(h=>h.isZorba);
@@ -599,14 +697,17 @@ function buildKarne(){
  } else {
   gelenTavsiye = 'Sayın Veli, simülasyon boyunca karşı taraftan çocuğunuza yönelik herhangi bir zorbalık tespit edilmemiştir.';
  }
- const gelenRows = gelenZorba.map(h=>'<div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);border-radius:9px;padding:9px 10px;margin-bottom:7px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="color:#fca5a5;font-weight:700;font-size:12px;">Karşı Tarafın Zorbalığı</span></div><div style="font-size:12px;color:var(--text);">"'+h.metin+'"</div><div style="font-size:10px;color:var(--text3);margin-top:3px;">Saat: '+h.zaman+'</div></div>').join('');
+ const gelenRows = gelenZorba.map(h=>{
+  const p=getPlatformDisplay(h.platform||state.activePlatform);
+  return '<div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);border-radius:9px;padding:9px 10px;margin-bottom:7px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="color:#fca5a5;font-weight:700;font-size:12px;">Karşı Tarafın Zorbalığı</span>'+platformBadgeHTML(p.key)+'</div><div style="font-size:12px;color:var(--text);">"'+h.metin+'"</div><div style="font-size:10px;color:var(--text3);margin-top:3px;">'+p.name+' · Saat: '+h.zaman+'</div></div>';
+ }).join('');
  const gelenSec = '<div class="ksec"><div class="ksec-title" style="color:#ef4444;">🛡️ MARUZ KALINAN ZORBALIK ANALİZİ (Gelen Mesajlar)</div><div class="pedagoji-box" style="background:rgba(239,68,68,0.05);border-color:rgba(239,68,68,0.2);margin-bottom:10px;">'+gelenTavsiye+'</div>'+gelenRows+'</div>';
 
  document.getElementById('karneBody').innerHTML=
   '<div class="ksec"><div class="ksec-title">📊 DİJİTAL VATANDAŞLIK PUANI</div><div style="font-size:40px;font-weight:900;color:'+bc+';text-align:center;margin:3px 0;">'+s+'</div><div class="karne-score-bar"><div class="karne-score-fill" style="width:'+pct+'%;background:'+bc+'"></div></div><div style="text-align:center;font-size:10px;color:var(--text2)">%'+pct+' başarı · '+state.name+' · '+new Date().toLocaleDateString('tr-TR')+'</div></div>'+
   '<div class="ksec"><div class="ksec-title">📋 ÖZET İSTATİSTİKLER</div><div class="krow"><span class="krow-label">Toplam Mesaj</span><span class="krow-val">'+total+'</span></div><div class="krow"><span class="krow-label">✅ Güvenli Gönderilen</span><span class="krow-val" style="color:#4ade80">'+guvenli.length+'</span></div><div class="krow"><span class="krow-label">✋ Vazgeçilen (İrade Gösterdi)</span><span class="krow-val" style="color:#fbbf24">'+vazgec.length+'</span></div><div class="krow"><span class="krow-label">😈 Israrla Gönderilen</span><span class="krow-val" style="color:#f87171">'+inat.length+'</span></div><div class="krow"><span class="krow-label">🎓 Egitim Modu - Duzelttiler</span><span class="krow-val" style="color:#67e8f9">'+egitim.length+'</span></div><div class="krow"><span class="krow-label">Mod</span><span class="krow-val">'+(state.mode==='game'?'🎮 Oyun':'🎓 Eğitim')+'</span></div></div>'+
   '<div class="ksec"><div class="ksec-title">🎓 PEDAGOJİK DEĞERLENDİRME (Giden Mesajlar)</div><div class="pedagoji-box">'+tavsiye+'</div></div>'+
-  '<div class="ksec"><div class="ksec-title">📝 TÜM MESAJ KARARLARI (Veli Görebilir)</div><div style="overflow-x:auto;"><table class="msg-table"><thead><tr><th>Mesaj</th><th>Karar</th><th>Saat</th></tr></thead><tbody>'+(rows||'<tr><td colspan="3" style="color:var(--text3);text-align:center;padding:12px;">Henüz mesaj yok</td></tr>')+'</tbody></table></div><div style="font-size:10px;color:var(--text3);margin-top:8px;line-height:1.7;">* <strong style="color:#fbbf24">Vazgeçti</strong>: Sistem uyardı, çocuk uyarıyı kabul etti.<br>* <strong style="color:#f87171">İnat Gönderdi</strong>: Sistem uyardı, ısrarla gönderdi.<br>* <strong style="color:#67e8f9">Düzeltti</strong>: Eğitim modu, pedagojik geri bildirim sonrası düzeltti.</div></div>'+
+  '<div class="ksec"><div class="ksec-title">📝 TÜM MESAJ KARARLARI (Veli Görebilir)</div><div style="overflow-x:auto;"><table class="msg-table"><thead><tr><th>Mesaj</th><th>Platform</th><th>Karar</th><th>Saat</th></tr></thead><tbody>'+(rows||'<tr><td colspan="4" style="color:var(--text3);text-align:center;padding:12px;">Henüz mesaj yok</td></tr>')+'</tbody></table></div><div style="font-size:10px;color:var(--text3);margin-top:8px;line-height:1.7;">* <strong style="color:#fbbf24">Vazgeçti</strong>: Sistem uyardı, çocuk uyarıyı kabul etti.<br>* <strong style="color:#f87171">İnat Gönderdi</strong>: Sistem uyardı, ısrarla gönderdi.<br>* <strong style="color:#67e8f9">Düzeltti</strong>: Eğitim modu, pedagojik geri bildirim sonrası düzeltti.</div></div>'+
   (riskli.length>0?'<div class="ksec"><div class="ksec-title">⚠️ ENGELLENEN / RİSKLİ İÇERİKLER (Giden Mesajlar)</div>'+rdetail+'</div>':'') +
   gelenSec; // Yeni gelen mesajlar analizini ekler
 }
@@ -634,7 +735,7 @@ function printKarne(){
  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>SiberKalkan - Veli Karnesi - '+state.name+'</title><style>'+css+'</style></head><body>'
   +'<div style="background:#073b62;color:white;padding:16px;border-radius:8px;margin-bottom:18px;">'
   +'<h2 style="margin:0 0 4px;font-size:18px;">SiberKalkan - Veli Bilgilendirme Raporu</h2>'
-  +'<div style="font-size:11px;opacity:.8;">Ogrenci: '+state.name+' | '+tarih+'</div></div>'
+  +'<div style="font-size:11px;opacity:.8;">Ogrenci: '+state.name+' | '+tarih+'</div><div style="font-size:11px;opacity:.8;margin-top:4px;">Platformlar: '+state.selectedPlatforms.map(function(p){return getPlatformDisplay(p).name;}).join(', ')+'</div></div>'
   +kbHTML
   +'<p style="font-size:10px;color:#999;margin-top:16px;">SiberKalkan AI - Otomatik Rapor</p>'
   +'</body></html>';
@@ -708,7 +809,7 @@ function showDetay(key){
     +'<div style="font-size:13px;color:var(--text);flex:1;word-break:break-word;">"'+h.metin+'"</div>'
     +'<span style="background:'+kBg+';color:'+kRenk+';font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px;white-space:nowrap;flex-shrink:0;">'+h.karar.split('(')[0].trim()+'</span>'
     +'</div>'
-    +'<div style="margin-top:5px;font-size:10px;color:var(--text3);">'+h.etiket+' · '+h.kaynak+' · '+h.zaman+'</div>'
+    +'<div style="margin-top:5px;font-size:10px;color:var(--text3);">'+getPlatformDisplay(h.platform||state.activePlatform).name+' · '+h.etiket+' · '+h.kaynak+' · '+h.zaman+'</div>'
     +'</div>';
   }).join('');
  }
@@ -771,7 +872,7 @@ function savePool(){
 }
 
 function updateTime(){const d=new Date();document.getElementById('statusTime').textContent=d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');}
-updateTime();setInterval(updateTime,10000);
+updateTime();updatePlatformSelectionUI();setInterval(updateTime,10000);
 </script>
 </body>
 </html>
