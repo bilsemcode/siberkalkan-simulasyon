@@ -337,6 +337,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
             <option value="Taciz">Taciz</option>
             <option value="Normal / Güvenli">Normal / Güvenli</option>
           </select>
+          <select class="admin-select" id="trainMatchType">
+            <option value="exact">Sadece Tam Eşleşme</option>
+            <option value="stem" selected>Türevleriyle Eşleştir</option>
+          </select>
           <button class="btn-egit" onclick="trainWord()">🧠 Sisteme Öğret (0.02sn)</button>
         </div>
         <div class="asec" style="cursor:pointer;" onclick="goKarneFromAdmin()">
@@ -357,7 +361,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
             </div>
             <div style="max-height:250px;overflow-y:auto;border-radius:8px;">
               <table class="pool-table">
-                <thead><tr><th>İfade</th><th>Kategori</th><th></th></tr></thead>
+                <thead><tr><th>İfade</th><th>Kategori</th><th>Eşleşme</th><th></th></tr></thead>
                 <tbody id="poolTbody"></tbody>
               </table>
             </div>
@@ -387,8 +391,9 @@ const KARA=['siktir','sik','amk','aq','oç','piç','yavşak','gerizekalı','sala
 let DB=[
   {m:'berbat birisin',e:'Taciz'},{m:'şerefsiz',e:'Siber Zorbalık'},{m:'seni döveceğim.',e:'Tehdit'},{m:'eşek sin',e:'Küfür / Hakaret'},{m:'kahretsin',e:'Siber Zorbalık'},{m:'saçma sapan konuşma',e:'Siber Zorbalık'},{m:'sümsük',e:'Siber Zorbalık'},{m:'terbiyesiz',e:'Siber Zorbalık'},{m:'terbiye siz',e:'Küfür / Hakaret'},{m:'küfür',e:'Siber Zorbalık'},{m:'seni döverim',e:'Tehdit'},{m:'senden nefret ediyorum',e:'Siber Zorbalık'},{m:'eşek herif',e:'Siber Zorbalık'},{m:'kö pek',e:'Küfür / Hakaret'},{m:'kö pe k',e:'Siber Zorbalık'},{m:'defol git',e:'Küfür / Hakaret'},{m:'sevişelim',e:'Taciz'},{m:'sen maymunsun',e:'Siber Zorbalık'},{m:'şerefsizköppek',e:'Küfür / Hakaret'},{m:'şerefsizzzköppek',e:'Küfür / Hakaret'},{m:'şrfsz',e:'Siber Zorbalık'},{m:'kpk',e:'Küfür / Hakaret'},{m:'s.k',e:'Siber Zorbalık'},{m:'s*k',e:'Siber Zorbalık'},{m:'fuck',e:'Küfür / Hakaret'},{m:'terbiyesizzzz',e:'Siber Zorbalık'},{m:'eşek',e:'Küfür / Hakaret'},{m:'Senden nefret ediyorum',e:'Siber Zorbalık'},{m:'Allah belanı versin',e:'Siber Zorbalık'},{m:'köpek',e:'Küfür / Hakaret'},{m:'maymun',e:'Küfür / Hakaret'},{m:'maymunsun',e:'Küfür / Hakaret'},{m:'eşeksin',e:'Küfür / Hakaret'}
 ];
+DB=DB.map(function(item){ item.t = item.t==='stem' ? 'stem' : 'exact'; return item; });
 
-let pChanges={}, pTextChanges={}, pDeleted=new Set(), pPage=0;
+let pChanges={}, pTextChanges={}, pModeChanges={}, pDeleted=new Set(), pPage=0;
 var LS_KEY = 'siberkalkan_db_v1';
 
 function lsSave(){try{localStorage.setItem(LS_KEY, JSON.stringify(DB));}catch(e){}}
@@ -400,8 +405,9 @@ function lsLoad(){
       if(Array.isArray(parsed) && parsed.length > 0){
         parsed.forEach(function(item){
           if(!item.m || !item.e) return;
+          item.t = item.t==='stem' ? 'stem' : 'exact';
           var exists = DB.findIndex(function(h){ return h.m === item.m; });
-          if(exists >= 0) DB[exists].e = item.e; else DB.unshift(item);
+          if(exists >= 0){ DB[exists].e = item.e; DB[exists].t = item.t; } else DB.unshift(item);
         });
         return true;
       }
@@ -496,8 +502,27 @@ function cycleActivePlatform(){
 }
 
 
-function ncRaw(t){return t.toLowerCase().replace(/[@\u0131\u0130\u015f\u015e\u00e7\u00c7\u00f6\u00d6\u00fc\u00dc\u011f\u011e]/g,function(c){var m={'@':'a','\u0131':'i','\u0130':'i','\u015f':'s','\u015e':'s','\u00e7':'c','\u00c7':'c','\u00f6':'o','\u00d6':'o','\u00fc':'u','\u00dc':'u','\u011f':'g','\u011e':'g'};return m[c]||c;});}
+function ncRaw(t){return String(t||'').toLowerCase().replace(/[@\u0131\u0130\u015f\u015e\u00e7\u00c7\u00f6\u00d6\u00fc\u00dc\u011f\u011e]/g,function(c){var m={'@':'a','\u0131':'i','\u0130':'i','\u015f':'s','\u015e':'s','\u00e7':'c','\u00c7':'c','\u00f6':'o','\u00d6':'o','\u00fc':'u','\u00dc':'u','\u011f':'g','\u011e':'g'};return m[c]||c;});}
 function nc(t){return ncRaw(t).replace(/\s+/g,'');}
+function escapeRegExp(s){return String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function normalizeWordToken(t){return ncRaw(t).replace(/[^a-z0-9çğıöşü]/gi,'');}
+function buildStemRegex(base){
+ var root=normalizeWordToken(base);
+ if(!root) return null;
+ return new RegExp('(^|[^a-z0-9çğıöşü])('+escapeRegExp(root)+'(?:[a-z0-9çğıöşü]{1,10})?)(?=$|[^a-z0-9çğıöşü])','i');
+}
+function stemMatch(haystack,needle){
+ var hs=ncRaw(haystack);
+ var nd=ncRaw(needle).trim();
+ if(!nd || nd.indexOf(' ')>=0) return wordMatch(haystack,needle);
+ var rgx=buildStemRegex(nd);
+ return rgx ? rgx.test(hs) : false;
+}
+function getMatchType(item){return item&&item.t==='stem'?'stem':'exact';}
+function entryMatches(haystack,item){
+ if(!item||!item.m) return false;
+ return getMatchType(item)==='stem' ? stemMatch(haystack,item.m) : wordMatch(haystack,item.m);
+}
 function wordMatch(haystack,needle){
  var hs=ncRaw(haystack).trim(); var nd=ncRaw(needle).trim();
  if(hs===nd) return true;
@@ -512,7 +537,7 @@ function wordMatch(haystack,needle){
 }
 function analiz(t){
  for(var i=0;i<KARA.length;i++){if(wordMatch(t,KARA[i])) return{b:true,e:'Küfür / Hakaret',k:'Kara Liste',s:0.99};}
- for(var j=0;j<DB.length;j++){if(wordMatch(t,DB[j].m)) return{b:true,e:DB[j].e,k:'Excel Hafizasi',s:1.0};}
+ for(var j=0;j<DB.length;j++){if(entryMatches(t,DB[j])) return{b:true,e:DB[j].e,k:getMatchType(DB[j])==='stem'?'Excel Hafizasi + Turev':'Excel Hafizasi',s:1.0};}
  var sc=bert(t); if(sc>0.60) return{b:true,e:'Siber Zorbalık',k:'BERT AI',s:sc};
  return{b:false,e:'Normal / Güvenli',k:'Temiz',s:1-sc};
 }
@@ -759,13 +784,14 @@ function setAdminMode(m){
 function trainWord(){
  const text=document.getElementById('trainText').value.trim();
  const label=document.getElementById('trainLabel').value;
+ const matchType=document.getElementById('trainMatchType').value;
  if(!text)return;
  const i=DB.findIndex(h=>nc(h.m)===nc(text));
- if(i>=0)DB[i].e=label;else DB.unshift({m:text.toLowerCase(),e:label});
+ if(i>=0){DB[i].e=label;DB[i].t=matchType;}else DB.unshift({m:text.toLowerCase(),e:label,t:matchType});
  document.getElementById('trainText').value='';
  document.getElementById('poolBadge').textContent='('+DB.length+' kayıt)';
  lsSave();
- showToast('✅ Sistem öğrendi! Kalıcı kaydedildi.','#7c3aed');
+ showToast(matchType==='stem'?'✅ Sistem kelimeyi türevleriyle öğrendi!':'✅ Sistem kelimeyi tam eşleşme ile öğrendi!','#7c3aed');
  renderPool();
 }
 function updateAdmin(){
@@ -821,21 +847,24 @@ function togglePool(){
  const body=document.getElementById('poolBody');const arrow=document.getElementById('poolArrow');
  const open=body.classList.contains('open');
  body.classList.toggle('open',!open); arrow.classList.toggle('open',!open);
- if(!open){pPage=0;pChanges={};pTextChanges={};pDeleted=new Set();renderPool();}
+ if(!open){pPage=0;pChanges={};pTextChanges={};pModeChanges={};pDeleted=new Set();renderPool();}
 }
 function renderPool(){
  const q=document.getElementById('poolSearch').value.toLowerCase().trim();
- pFiltered=DB.map((h,i)=>({...h,_i:i})).filter(h=>!pDeleted.has(h._i)&&(!q||h.m.includes(q)||h.e.toLowerCase().includes(q)));
+ pFiltered=DB.map((h,i)=>({...h,_i:i})).filter(h=>!pDeleted.has(h._i)&&(!q||h.m.includes(q)||h.e.toLowerCase().includes(q)||getMatchType(h).includes(q)||('turev exact').includes(q)));
  const total=pFiltered.length; const start=pPage*PAGE; const page=pFiltered.slice(start,start+PAGE);
  document.getElementById('poolCountTxt').textContent=total+' sonuç';
- document.getElementById('pageInfo').textContent=(start+1)+'-'+Math.min(start+PAGE,total)+' / '+total;
+ document.getElementById('pageInfo').textContent=(total?start+1:0)+'-'+Math.min(start+PAGE,total)+' / '+total;
  document.getElementById('pagePrev').disabled=pPage===0; document.getElementById('pageNext').disabled=start+PAGE>=total;
  const CATS=['Siber Zorbalık','Küfür / Hakaret','Tehdit','Taciz','Normal / Güvenli'];
+ const TYPES=[['exact','Tam'],['stem','Türev']];
  document.getElementById('poolTbody').innerHTML=page.map(h=>{
   const cur=pChanges[h._i]||h.e;
+  const curType=pModeChanges[h._i]||getMatchType(h);
   const opts=CATS.map(c=>'<option value="'+c+'"'+(cur===c?' selected':'')+'>'+c+'</option>').join('');
+  const typeOpts=TYPES.map(function(t){return '<option value="'+t[0]+'"'+(curType===t[0]?' selected':'')+'>'+t[1]+'</option>';}).join('');
   const mt=pTextChanges[h._i]!==undefined?pTextChanges[h._i]:h.m;
-  return '<tr id="row-'+h._i+'"><td class="metin-td" style="cursor:pointer;" title="Duzenlmek icin tikla" onclick="editMetin('+h._i+',this)">'+escHtml(mt)+'</td><td><select class="pool-cat-sel" onchange="pChanges['+h._i+']=this.value">'+opts+'</select></td><td><button class="pool-del-btn" onclick="delRow('+h._i+')">Sil</button></td></tr>';
+  return '<tr id="row-'+h._i+'"><td class="metin-td" style="cursor:pointer;" title="Duzenlemek icin tikla" onclick="editMetin('+h._i+',this)">'+escHtml(mt)+'</td><td><select class="pool-cat-sel" onchange="pChanges['+h._i+']=this.value">'+opts+'</select></td><td><select class="pool-cat-sel" onchange="pModeChanges['+h._i+']=this.value">'+typeOpts+'</select></td><td><button class="pool-del-btn" onclick="delRow('+h._i+')">Sil</button></td></tr>';
  }).join('');
 }
 function changePage(d){pPage+=d;renderPool();}
@@ -865,8 +894,9 @@ function editMetin(idx,td){
 function savePool(){
  for(const[idx,nl]of Object.entries(pChanges))if(DB[idx])DB[idx].e=nl;
  for(const[idx,nt]of Object.entries(pTextChanges))if(DB[idx])DB[idx].m=nt;
+ for(const[idx,mt]of Object.entries(pModeChanges))if(DB[idx])DB[idx].t=mt==='stem'?'stem':'exact';
  [...pDeleted].sort((a,b)=>b-a).forEach(i=>DB.splice(i,1));
- pChanges={};pTextChanges={};pDeleted=new Set();pPage=0;
+ pChanges={};pTextChanges={};pModeChanges={};pDeleted=new Set();pPage=0;
  document.getElementById('poolBadge').textContent='('+DB.length+' kayıt)';
  lsSave(); showToast('💾 Değişiklikler kaydedildi ve kalıcı saklandı!','#0077b6'); renderPool();
 }
